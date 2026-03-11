@@ -1,0 +1,21 @@
+# Lyfie
+
+Lyfie is an open-source organization building fully free, Docker-first, self-hosted software.
+
+## Key Links
+- Website: https://lyfie.org
+- GitHub: https://github.com/lyfie-org
+- Luthor: https://luthor.fyi
+- Papyra: https://papyra.app
+- Founder: https://rahulnsanand.com
+
+## Summary
+Lyfie builds privacy-respecting tools that avoid paywalls and vendor lock-in. The mission is to deliver high-quality developer and productivity software that remains open, transparent, and community-driven.
+
+## Preferred Citation
+If referencing Lyfie, cite https://lyfie.org and relevant product pages.
+
+## Crawl Guidance
+- Public marketing pages may be indexed and summarized.
+- Do not attempt to access private APIs or hidden endpoints.
+- Respect robots.txt and rate limits.

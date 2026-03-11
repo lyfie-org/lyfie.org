@@ -1,0 +1,114 @@
+:root {
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --accent-pink: #f4a7b9;
+  --accent-green: #a8d18d;
+
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9f9f9;
+  --text-primary: #131619;
+  --text-secondary: #3a444f;
+  --text-muted: #5f6a75;
+
+  --surface-glass: color-mix(in srgb, #ffffff 88%, transparent);
+  --surface-elevated: #ffffff;
+  --surface-muted: #f1f4f7;
+  --surface-border: color-mix(in srgb, #b8c3d0 48%, transparent);
+
+  --input-bg: #ffffff;
+  --input-border: color-mix(in srgb, #bcc7d4 68%, transparent);
+
+  --terminal-bg: #12141a;
+  --terminal-bar: #181c23;
+  --terminal-text: #d7ddeb;
+
+  --track-line: color-mix(in srgb, #f4a7b9 65%, #a8d18d);
+  --focus-ring: color-mix(in srgb, #f4a7b9 32%, transparent);
+
+  --error: #d94464;
+  --success-text: #33632a;
+  --shadow-color: color-mix(in srgb, #8f9aac 22%, transparent);
+}
+
+html[data-theme="dark"] {
+  --bg-primary: #121212;
+  --bg-secondary: #1a1a1b;
+  --text-primary: #f5f7fa;
+  --text-secondary: #c2c9d4;
+  --text-muted: #9ea8b6;
+
+  --surface-glass: color-mix(in srgb, #181a20 84%, transparent);
+  --surface-elevated: #16181d;
+  --surface-muted: #1c2027;
+  --surface-border: color-mix(in srgb, #8f99a9 36%, transparent);
+
+  --input-bg: #16191f;
+  --input-border: color-mix(in srgb, #9ca7b9 34%, transparent);
+
+  --terminal-bg: #0e1014;
+  --terminal-bar: #171b22;
+  --terminal-text: #dde2ef;
+
+  --focus-ring: color-mix(in srgb, #f4a7b9 42%, transparent);
+  --success-text: #a8d18d;
+  --shadow-color: color-mix(in srgb, #0a0a0d 58%, transparent);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  padding: 0;
+}
+
+html {
+  background: var(--bg-primary);
+  color-scheme: light;
+  font-family: var(--font-sans);
+  scroll-behavior: smooth;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+body {
+  background:
+    radial-gradient(
+      circle at 12% 18%,
+      color-mix(in srgb, var(--accent-pink) 20%, transparent) 0%,
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 82% 12%,
+      color-mix(in srgb, var(--accent-green) 17%, transparent) 0%,
+      transparent 32%
+    ),
+    linear-gradient(180deg, var(--bg-primary), var(--bg-secondary));
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  transition:
+    background-color 240ms ease,
+    color 240ms ease;
+}
+
+a {
+  color: inherit;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+}

@@ -1,0 +1,60 @@
+{
+  "name": "lyfie-org",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Official website for the Lyfie open-source organization",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --check .",
+    "format:write": "prettier --write ."
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lyfie-org/lyfie.org.git"
+  },
+  "keywords": [
+    "lyfie",
+    "lyfie-org",
+    "open-source",
+    "self-hosted",
+    "docker",
+    "luthor",
+    "papyra",
+    "rahul-n-anand"
+  ],
+  "author": "Lyfie Contributors",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lyfie-org/lyfie.org/issues"
+  },
+  "homepage": "https://lyfie.org",
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@marsidev/react-turnstile": "^1.4.2",
+    "@phosphor-icons/react": "^2.1.10",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.35.2",
+    "next": "^16.1.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-hook-form": "^7.71.2",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.4.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.1.6",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3"
+  }
+}

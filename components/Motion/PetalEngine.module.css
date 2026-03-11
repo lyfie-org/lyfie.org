@@ -1,0 +1,34 @@
+.field {
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed;
+  z-index: 0;
+}
+
+.petal {
+  background: radial-gradient(circle at 30% 30%, #ffd6e0 0%, #f4a7b9 58%, #d77a8f 100%);
+  border-radius: 60% 75% 65% 80%;
+  filter: blur(0.5px);
+  opacity: 0;
+  position: absolute;
+}
+
+.sm {
+  height: 10px;
+  width: 14px;
+}
+
+.md {
+  height: 12px;
+  width: 18px;
+}
+
+.lg {
+  height: 15px;
+  width: 24px;
+}
+
+:global(html[data-theme="dark"]) .petal {
+  opacity: 0.18;
+}

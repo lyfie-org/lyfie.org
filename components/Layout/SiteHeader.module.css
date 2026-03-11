@@ -1,0 +1,80 @@
+.header {
+  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--surface-glass) 78%, transparent);
+  border-bottom: 1px solid var(--surface-border);
+  left: 0;
+  position: sticky;
+  right: 0;
+  top: 0;
+  z-index: 40;
+}
+
+.inner {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin: 0 auto;
+  max-width: 1120px;
+  min-height: 4.2rem;
+  padding: 0 1rem;
+}
+
+.brand {
+  align-items: center;
+  color: var(--text-primary);
+  display: inline-flex;
+  font-weight: 700;
+  gap: 0.6rem;
+  text-decoration: none;
+}
+
+.brandDot {
+  align-items: center;
+  background: linear-gradient(135deg, var(--accent-pink), var(--accent-green));
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px var(--shadow-color);
+  color: #121212;
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 800;
+  height: 1.85rem;
+  justify-content: center;
+  width: 1.85rem;
+}
+
+.brandText {
+  font-size: 0.88rem;
+  letter-spacing: 0.14em;
+}
+
+.nav {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.navLink {
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 0.45rem 0.85rem;
+  text-decoration: none;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease;
+}
+
+.navLink:hover,
+.navLink:focus-visible {
+  background: var(--surface-muted);
+  color: var(--text-primary);
+  outline: none;
+}
+
+@media (max-width: 840px) {
+  .nav {
+    display: none;
+  }
+}

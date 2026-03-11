@@ -1,0 +1,46 @@
+export const siteConfig = {
+  name: "Lyfie",
+  shortName: "Lyfie",
+  url: "https://lyfie.org",
+  description:
+    "Lyfie builds fantastic, open-source, no-paywall products focused on self-hosted, Docker-first experiences.",
+  defaultLocale: "en_US",
+  social: {
+    github: "https://github.com/lyfie-org",
+    luthor: "https://luthor.fyi",
+    papyra: "https://papyra.app",
+    founder: "https://rahulnsanand.com"
+  },
+  keywords: [
+    "lyfie",
+    "lyfie org",
+    "lyfie-org",
+    "lyfie open source",
+    "open source organization",
+    "self hosted software",
+    "docker first apps",
+    "dockerized applications",
+    "free software alternatives",
+    "privacy first apps",
+    "luthor",
+    "luthor.fyi",
+    "papyra",
+    "papyra app",
+    "rokada",
+    "lyfie app",
+    "rahul n anand",
+    "rahulnsanand",
+    "developer tools",
+    "productivity tools",
+    "google keep alternative",
+    "self hosted notes",
+    "opensource docker",
+    "saas alternative",
+    "no paywall apps",
+    "foss projects",
+    "cloud native opensource",
+    "indie open source",
+    "community driven software",
+    "outpace the horizon"
+  ]
+} as const;
