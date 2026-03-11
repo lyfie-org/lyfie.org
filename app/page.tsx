@@ -1,118 +1,48 @@
-import { Hero } from "@/components/Hero/Hero";
-import { JoinUs } from "@/components/JoinUs/JoinUs";
-import { Reveal } from "@/components/Motion/Reveal";
-import { Roadmap } from "@/components/Roadmap/Roadmap";
-import { siteConfig } from "@/lib/constants/site";
+import Link from "next/link";
 
-import styles from "@/app/page.module.css";
-
-const organizationJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Lyfie",
-  legalName: "Lyfie Open Source Organization",
-  url: "https://lyfie.org",
-  logo: "https://lyfie.org/icon.svg",
-  slogan: "Outpace the horizon",
-  sameAs: [
-    siteConfig.social.github,
-    siteConfig.social.founder,
-    siteConfig.social.luthor,
-    siteConfig.social.papyra
-  ],
-  founder: {
-    "@type": "Person",
-    name: "Rahul N. Anand",
-    url: siteConfig.social.founder
-  },
-  description: siteConfig.description,
-  knowsAbout: [
-    "Open source software",
-    "Self-hosted applications",
-    "Docker-first developer tooling",
-    "Privacy-first product design"
-  ]
-};
-
-const softwareJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: "Luthor",
-  applicationCategory: "DeveloperApplication",
-  operatingSystem: "Linux, macOS, Windows via Docker",
-  offers: {
-    "@type": "Offer",
-    price: "0",
-    priceCurrency: "USD"
-  },
-  isAccessibleForFree: true,
-  author: {
-    "@type": "Organization",
-    name: "Lyfie"
-  },
-  url: siteConfig.social.luthor,
-  description:
-    "Luthor is Lyfie's flagship Docker-first platform for fast and reliable self-hosted workflows."
-};
+import styles from "./page.module.css";
 
 export default function HomePage() {
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify([organizationJsonLd, softwareJsonLd])
-        }}
-      />
+    <div className={styles.page}>
+      <section className={styles.hero} id="home">
+        <p className={styles.kicker}>Starter Template</p>
+        <h1 className={styles.title}>A clean base for your website.</h1>
+        <p className={styles.description}>
+          This boilerplate ships with a responsive navigation bar, structured
+          content sections, and a reusable footer.
+        </p>
+        <div className={styles.actions}>
+          <Link href="/#features" className={styles.primaryAction}>
+            Explore features
+          </Link>
+          <Link href="/#contact" className={styles.secondaryAction}>
+            Contact us
+          </Link>
+        </div>
+      </section>
 
-      <article className={styles.page}>
-        <section className={styles.block}>
-          <Hero />
-        </section>
+      <section className={styles.section} id="features">
+        <h2>Features</h2>
+        <ul className={styles.featureList}>
+          <li>App Router structure with reusable layout components.</li>
+          <li>Responsive navigation links for key website sections.</li>
+          <li>Footer with utility links and dynamic copyright year.</li>
+        </ul>
+      </section>
 
-        <section id="mission" className={styles.block}>
-          <Reveal className={styles.mission ?? ""}>
-            <p className={styles.kicker}>Why Lyfie Exists</p>
-            <h2 className={styles.blockTitle}>
-              Open-source products without compromise.
-            </h2>
-            <p className={styles.lead}>
-              We are building an ecosystem that removes paywalls, respects privacy, and
-              keeps operations simple through Dockerized deployment. Lyfie is for people
-              who want speed, ownership, and elegance without subscription drag.
-            </p>
-            <div className={styles.points}>
-              <article>
-                <h3>Docker-first by design</h3>
-                <p>
-                  Consistent deployments from local to cloud, without brittle setup docs.
-                </p>
-              </article>
-              <article>
-                <h3>No lock-in economics</h3>
-                <p>
-                  Core tools stay fully free and open so teams can build long-term
-                  confidence.
-                </p>
-              </article>
-              <article>
-                <h3>Privacy as a default</h3>
-                <p>
-                  No tracking theater. You control your infrastructure and your data path.
-                </p>
-              </article>
-            </div>
-          </Reveal>
-        </section>
+      <section className={styles.section} id="about">
+        <h2>About</h2>
+        <p>
+          Use this as your starting point for product pages, docs, or marketing
+          content.
+        </p>
+      </section>
 
-        <section className={styles.block}>
-          <Roadmap />
-        </section>
-
-        <section className={styles.block}>
-          <JoinUs />
-        </section>
-      </article>
-    </>
+      <section className={styles.section} id="contact">
+        <h2>Contact</h2>
+        <p>Replace this section with your real form or social links.</p>
+      </section>
+    </div>
   );
 }

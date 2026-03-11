@@ -1,63 +1,34 @@
 import Link from "next/link";
 
-import { ThemeToggle } from "@/components/ThemeToggle/ThemeToggle";
-import styles from "@/components/Layout/SiteHeader.module.css";
+import styles from "./SiteHeader.module.css";
 
-const navLinks = [
-  {
-    label: "Mission",
-    href: "#mission"
-  },
-  {
-    label: "Roadmap",
-    href: "#roadmap"
-  },
-  {
-    label: "Contribute",
-    href: "#join"
-  },
-  {
-    label: "Luthor",
-    href: "https://luthor.fyi",
-    external: true
-  }
-] as const satisfies ReadonlyArray<{
-  label: string;
-  href: string;
-  external?: boolean;
-}>;
+const navItems = [
+  { href: "/", label: "Home" },
+  { href: "/#features", label: "Features" },
+  { href: "/#about", label: "About" },
+  { href: "/#contact", label: "Contact" }
+];
 
-export const SiteHeader = () => {
+export default function SiteHeader() {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
         <Link href="/" className={styles.brand}>
-          <span className={styles.brandDot} aria-hidden>
-            L
-          </span>
-          <span className={styles.brandText}>LYFIE</span>
+          Lyfie
         </Link>
 
-        <nav aria-label="Primary" className={styles.nav}>
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={styles.navLink}
-              {...("external" in link && link.external
-                ? {
-                    target: "_blank",
-                    rel: "noopener noreferrer"
-                  }
-                : {})}
-            >
-              {link.label}
-            </Link>
-          ))}
+        <nav aria-label="Primary">
+          <ul className={styles.navList}>
+            {navItems.map((item) => (
+              <li key={item.href}>
+                <Link href={item.href} className={styles.navLink}>
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </nav>
-
-        <ThemeToggle />
       </div>
     </header>
   );
-};
+}
