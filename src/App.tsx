@@ -1,8 +1,10 @@
 import styles from "./App.module.css";
+import FallingFlora from "./components/FallingFlora";
 
 function App() {
   return (
     <section className={styles.page}>
+      <FallingFlora />
       <div className={styles.card}>
         <div className={styles.logoWrap} aria-hidden="true">
           <img

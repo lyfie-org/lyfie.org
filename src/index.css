@@ -38,9 +38,12 @@ body,
 }
 
 body {
+  position: relative;
+  isolation: isolate;
   font-family: var(--font-body), var(--font-body-fallback);
   line-height: 1.5;
   color: var(--color-text);
+  overflow-x: clip;
   background:
     radial-gradient(
       60rem 26rem at 12% 8%,
@@ -60,6 +63,48 @@ body {
     var(--color-bg);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: -14vmax;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.84;
+  background:
+    radial-gradient(
+      60rem 26rem at 12% 8%,
+      rgb(248 173 177 / 0.2),
+      rgb(248 173 177 / 0)
+    ),
+    radial-gradient(
+      58rem 26rem at 88% 96%,
+      rgb(168 206 94 / 0.24),
+      rgb(168 206 94 / 0)
+    ),
+    radial-gradient(
+      70rem 28rem at 50% -8%,
+      rgb(255 255 255 / 0.95),
+      rgb(255 255 255 / 0)
+    );
+  background-repeat: no-repeat;
+  will-change: transform;
+  animation: ambient-gradient-drift 44s ease-in-out infinite alternate;
+}
+
+@keyframes ambient-gradient-drift {
+  0% {
+    transform: translate3d(-2vw, -1vh, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(2.5vw, 1.5vh, 0) scale(1.04);
+  }
+
+  100% {
+    transform: translate3d(-1.5vw, 2vh, 0) scale(1.01);
+  }
 }
 
 h1,
@@ -87,4 +132,10 @@ img,
 svg {
   display: block;
   max-width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    animation: none;
+  }
 }
