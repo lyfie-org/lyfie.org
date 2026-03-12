@@ -1,13 +1,30 @@
 import type { Metadata } from "next";
+import { Comfortaa, JetBrains_Mono, Manrope } from "next/font/google";
 
-import SiteFooter from "@/components/Layout/SiteFooter";
-import SiteHeader from "@/components/Layout/SiteHeader";
 import "@/styles/globals.css";
-import styles from "@/app/layout.module.css";
+
+const body = Manrope({
+  subsets: ["latin"],
+  variable: "--font-body",
+  weight: ["400", "500", "600", "700"]
+});
+
+const display = Comfortaa({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["400", "500", "600", "700"],
+  style: ["normal"]
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  weight: ["400", "500", "600", "700"]
+});
 
 export const metadata: Metadata = {
-  title: "Lyfie",
-  description: "Basic boilerplate website for Lyfie.org"
+  title: "Lyfie | Under Construction",
+  description: "Lyfie.org is currently being updated."
 };
 
 export default function RootLayout({
@@ -17,12 +34,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <div className={styles.siteShell}>
-          <SiteHeader />
-          <main className={styles.mainContent}>{children}</main>
-          <SiteFooter />
-        </div>
+      <body
+        className={`${body.variable} ${display.variable} ${mono.variable}`}
+      >
+        {children}
       </body>
     </html>
   );

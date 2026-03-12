@@ -1,13 +1,32 @@
-import { defineConfig } from "eslint/config";
-import nextCoreVitals from "eslint-config-next/core-web-vitals";
-import nextTypescript from "eslint-config-next/typescript";
+import js from "@eslint/js";
 import prettierConfig from "eslint-config-prettier";
+import globals from "globals";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import tseslint from "typescript-eslint";
 
-export default defineConfig([
-  ...nextCoreVitals,
-  ...nextTypescript,
-  prettierConfig,
+export default tseslint.config(
   {
-    ignores: [".next/**", "out/**", "build/**", "coverage/**", "next-env.d.ts"]
-  }
-]);
+    ignores: [".next/**", "dist/**", "node_modules/**", "coverage/**", ".docs/**"]
+  },
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    languageOptions: {
+      ecmaVersion: 2022,
+      globals: globals.browser
+    },
+    plugins: {
+      "react-hooks": reactHooks,
+      "react-refresh": reactRefresh
+    },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+      "react-refresh/only-export-components": [
+        "warn",
+        { allowConstantExport: true }
+      ]
+    }
+  },
+  prettierConfig
+);

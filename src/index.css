@@ -1,12 +1,21 @@
+@import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap");
+
 :root {
-  --color-bg: #f8f6f2;
-  --color-canvas-soft: #f5f1e8;
-  --color-surface: #f0e9dc;
-  --color-text: #2d2419;
-  --color-text-muted: #695b4a;
-  --color-border: #dfd8ca;
+  --lyfie-pink: #f8adb1;
+  --lyfie-green: #a8ce5e;
+  --lyfie-pink-deep: #d9848c;
+  --lyfie-green-deep: #6e9137;
+  --color-bg: #f6fbef;
+  --color-canvas-soft: #fdf2f4;
+  --color-surface: #ecf6db;
+  --color-text: #2b3b1d;
+  --color-text-muted: #637549;
+  --color-border: #bfd89b;
   --container-width: 68rem;
   --space-4: 1rem;
+  --font-body: "Manrope";
+  --font-display: "Comfortaa";
+  --font-mono: "JetBrains Mono";
   --font-body-fallback: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
   --font-display-fallback:
     "Poppins", "Avenir Next Rounded", "Trebuchet MS", sans-serif;
@@ -22,8 +31,10 @@
 }
 
 html,
-body {
+body,
+#root {
   max-width: 100%;
+  min-height: 100%;
 }
 
 body {
@@ -31,6 +42,16 @@ body {
   line-height: 1.5;
   color: var(--color-text);
   background:
+    radial-gradient(
+      60rem 26rem at 12% 8%,
+      rgb(248 173 177 / 0.2),
+      rgb(248 173 177 / 0)
+    ),
+    radial-gradient(
+      58rem 26rem at 88% 96%,
+      rgb(168 206 94 / 0.24),
+      rgb(168 206 94 / 0)
+    ),
     radial-gradient(
       70rem 28rem at 50% -8%,
       rgb(255 255 255 / 0.95),

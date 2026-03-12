@@ -1,6 +1,6 @@
 # lyfie.org
 
-Minimal Next.js homepage boilerplate.
+Vite + React website boilerplate.
 
 ## Quick Start
 
@@ -9,7 +9,7 @@ pnpm install
 pnpm dev
 ```
 
-Open http://localhost:3000
+Open http://localhost:5173
 
 ## Quality Commands
 
@@ -17,4 +17,5 @@ Open http://localhost:3000
 pnpm lint
 pnpm typecheck
 pnpm build
+pnpm preview
 ```

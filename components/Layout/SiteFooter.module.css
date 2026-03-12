@@ -15,6 +15,7 @@
 
 .copy {
   color: var(--color-text-muted);
+  font-family: var(--font-mono), var(--font-mono-fallback);
   font-size: 0.95rem;
 }
 
@@ -26,6 +27,7 @@
 
 .link {
   color: var(--color-text-muted);
+  font-family: var(--font-body), var(--font-body-fallback);
   transition: color 0.2s ease;
 }
 

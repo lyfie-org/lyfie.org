@@ -1,9 +1,18 @@
-import styles from "./page.module.css";
+import styles from "./App.module.css";
 
-export default function HomePage() {
+function App() {
   return (
     <section className={styles.page}>
       <div className={styles.card}>
+        <div className={styles.logoWrap} aria-hidden="true">
+          <img
+            src="/logo.png"
+            alt=""
+            className={styles.logo}
+            width={140}
+            height={140}
+          />
+        </div>
         <p className={styles.status}>Site Update In Progress</p>
         <h1 className={styles.title}>Page Under Construction</h1>
         <p className={styles.description}>
@@ -14,3 +23,5 @@ export default function HomePage() {
     </section>
   );
 }
+
+export default App;

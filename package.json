@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@10.29.2",
-  "description": "Barebones homepage boilerplate for Lyfie.org",
+  "description": "Vite + React website for Lyfie.org",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint . --max-warnings=0",
+    "dev": "vite",
+    "build": "vite build",
+    "start": "vite preview",
+    "preview": "vite preview",
+    "lint": "eslint src --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "format": "prettier --check .",
     "format:write": "prettier --write ."
@@ -20,7 +21,11 @@
     "type": "git",
     "url": "git+https://github.com/lyfie-org/lyfie.org.git"
   },
-  "keywords": ["lyfie", "nextjs", "boilerplate"],
+  "keywords": [
+    "lyfie",
+    "nextjs",
+    "boilerplate"
+  ],
   "author": "Lyfie Contributors",
   "license": "MIT",
   "bugs": {
@@ -28,18 +33,25 @@
   },
   "homepage": "https://lyfie.org",
   "dependencies": {
-    "next": "^16.1.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.27.0",
+    "@eslint/js": "^9.39.1",
     "@types/node": "^25.4.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.0",
     "eslint": "^9.39.4",
-    "eslint-config-next": "^16.1.6",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.0.0",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
     "prettier": "^3.8.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.4",
+    "vite": "^7.1.11",
+    "wrangler": "^4.72.0"
   }
 }

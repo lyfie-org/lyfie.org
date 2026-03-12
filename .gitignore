@@ -5,6 +5,10 @@ node_modules/
 .next/
 out/
 
+# vite
+dist/
+.vite/
+
 # logs
 npm-debug.log*
 yarn-debug.log*
@@ -24,3 +28,5 @@ coverage/
 *.tsbuildinfo
 .docs
 .env.example
+.wrangler
+.dev.vars*

@@ -7,14 +7,31 @@
 
 .card {
   width: min(42rem, 100%);
-  border: 1px solid #ded7ca;
+  border: 1px solid rgb(162 193 98 / 0.5);
   border-radius: 1.35rem;
-  background: linear-gradient(180deg, #fffefb 0%, #f8f4ea 100%);
+  background: linear-gradient(
+    165deg,
+    rgb(255 255 255 / 0.95) 0%,
+    rgb(255 243 244 / 0.95) 44%,
+    rgb(242 251 226 / 0.96) 100%
+  );
   padding: clamp(1.75rem, 6vw, 3.25rem);
   text-align: center;
   box-shadow:
-    0 20px 48px rgb(30 22 14 / 0.08),
+    0 20px 48px rgb(54 72 30 / 0.12),
     0 2px 0 rgb(255 255 255 / 0.7) inset;
+}
+
+.logoWrap {
+  display: grid;
+  place-items: center;
+  margin-bottom: 0.35rem;
+}
+
+.logo {
+  width: clamp(5.5rem, 16vw, 8.25rem);
+  height: auto;
+  filter: drop-shadow(0 12px 24px rgb(76 98 40 / 0.18));
 }
 
 .status {
@@ -23,9 +40,9 @@
   gap: 0.45rem;
   padding: 0.34rem 0.75rem;
   border-radius: 999px;
-  border: 1px solid #d6cfbf;
-  background: #f6f1e5;
-  color: #6b5a45;
+  border: 1px solid rgb(146 174 90 / 0.45);
+  background: rgb(235 247 206 / 0.8);
+  color: #4c6920;
   font-family: var(--font-mono), var(--font-mono-fallback);
   font-size: 0.84rem;
   font-weight: 700;
@@ -35,7 +52,7 @@
 
 .title {
   margin-top: 1rem;
-  color: #2c2318;
+  color: #456126;
   font-family: var(--font-display), var(--font-display-fallback);
   font-size: clamp(2rem, 6.2vw, 3.5rem);
   line-height: 1;
@@ -45,7 +62,7 @@
 .description {
   margin: 1rem auto 0;
   max-width: 32ch;
-  color: #655748;
+  color: #65734c;
   font-size: clamp(1rem, 2.5vw, 1.18rem);
   line-height: 1.55;
 }
