@@ -15,6 +15,9 @@
   box-shadow:
     0 20px 48px rgb(30 22 14 / 0.08),
     0 2px 0 rgb(255 255 255 / 0.7) inset;
+  opacity: 0;
+  transform: translateY(1rem);
+  animation: card-fade-in 620ms ease-out forwards;
 }
 
 .status {
@@ -31,6 +34,9 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(0.6rem);
+  animation: fade-up-in 680ms ease-out 180ms forwards;
 }
 
 .title {
@@ -40,6 +46,9 @@
   font-size: clamp(2rem, 6.2vw, 3.5rem);
   line-height: 1;
   letter-spacing: -0.02em;
+  opacity: 0;
+  transform: translateY(0.45rem);
+  animation: fade-up-in 680ms ease-out 300ms forwards;
 }
 
 .description {
@@ -48,4 +57,32 @@
   color: #655748;
   font-size: clamp(1rem, 2.5vw, 1.18rem);
   line-height: 1.55;
+  opacity: 0;
+  transform: translateY(0.45rem);
+  animation: fade-up-in 760ms ease-out 420ms forwards;
+}
+
+@keyframes card-fade-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-up-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .status,
+  .title,
+  .description {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
