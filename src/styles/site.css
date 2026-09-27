@@ -1,0 +1,538 @@
+/* Site styles, ported from papyra.app/src/styles/site.css so lyfie.org and its
+   products share one design system. Everything reads from tokens.css; no colour
+   is written by hand. */
+@import "./tokens.css";
+@import "./fonts.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  /* Paper, not a flat fill: two barely-there warm washes give the page the
+     tactile depth of a sheet under a lamp. Both are token-derived, so they
+     re-tint in dark mode with everything else. */
+  background:
+    radial-gradient(60rem 40rem at 78% -8%, var(--accent-bg), transparent 68%),
+    radial-gradient(48rem 36rem at 6% 4%, var(--tint-scrim), transparent 62%), var(--bg);
+  background-attachment: fixed;
+}
+
+[data-theme="dark"] body {
+  /* --tint-scrim is deliberately fixed to warm ink and does not flip, so on a
+     dark ground it would read as a smudge. Use the surface tone instead. */
+  background:
+    radial-gradient(60rem 40rem at 78% -8%, var(--accent-bg), transparent 68%),
+    radial-gradient(48rem 36rem at 6% 4%, var(--surface), transparent 62%), var(--bg);
+  background-attachment: fixed;
+}
+
+/* ---------------------------------------------------------------- typography */
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--heading);
+  font-weight: 400;
+  color: var(--text-h);
+  text-wrap: balance;
+}
+
+h1 {
+  /* The 56px "splash/marketing size" the app"s own stylesheet reserves for
+     exactly this use. Stated in px, not rem: the root font-size is 18px, so a
+     rem clamp would silently scale this to 63px. */
+  font-size: clamp(36px, 4.5vw + 16px, 56px);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  margin: 0 0 var(--space-5);
+}
+
+h2 {
+  font-size: clamp(24px, 2.2vw + 14px, 36px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--space-4);
+}
+
+h3 {
+  font-size: var(--fs-lg);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--space-2);
+}
+
+p {
+  margin: 0 0 var(--space-4);
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--accent-text);
+  text-decoration-color: var(--accent-border);
+  text-underline-offset: 3px;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+code,
+pre {
+  font-family: var(--mono);
+  font-size: 0.875em;
+  background: var(--code-bg);
+  border-radius: 4px;
+}
+
+code {
+  padding: 2px 6px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--accent-bg);
+  color: var(--text-h);
+}
+
+/* -------------------------------------------------------------------- layout */
+
+.wrap {
+  width: 100%;
+  max-width: 68rem;
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+}
+
+.wrap--narrow {
+  max-width: 46rem;
+}
+
+.section {
+  padding-block: clamp(var(--space-12), 8vw, 7rem);
+}
+
+.eyebrow {
+  font: 500 var(--fs-xs) / 1 var(--sans);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+  margin: 0 0 var(--space-3);
+}
+
+.lede {
+  font-size: var(--fs-lg);
+  line-height: 1.5;
+  color: var(--text);
+  max-width: 42ch;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: calc(-1 * var(--space-12));
+  z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface);
+  color: var(--text-h);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-pill);
+  transition: top var(--dur) var(--ease);
+}
+
+.skip-link:focus {
+  top: var(--space-4);
+}
+
+/* ------------------------------------------------------------------- buttons */
+/* Same shape as papyra.app"s primary button. Sakura is light against paper, so
+   the fill carries a darker border to hold its edge. */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--accent-border);
+  background: var(--accent);
+  color: var(--accent-fg);
+  font: 500 var(--fs-sm) / 1 var(--sans);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    filter var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.btn:hover {
+  filter: brightness(1.06);
+  color: var(--accent-fg);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-h);
+}
+
+.btn--ghost:hover {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--text-h);
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn:hover,
+  .btn:active {
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------------- cards */
+/* Same object as papyra.app"s cards (and the note card in the Papyra app). */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+
+a.card:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  transform: translateY(-2px);
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a.card:hover {
+    transform: none;
+  }
+}
+
+.card__icon {
+  color: var(--accent-text);
+  margin-bottom: var(--space-1);
+}
+
+.card p {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+}
+
+/* --------------------------------------------------------------- theme swap */
+/* A theme change fades over ~250ms (see ThemeToggle.astro), matching Papyra. */
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition:
+    background-color var(--dur-slow) var(--ease-inout),
+    color var(--dur) var(--ease-inout),
+    border-color var(--dur) var(--ease-inout),
+    box-shadow var(--dur) var(--ease-inout) !important;
+}
+
+/* ---------------------------------------------------------------------- prose */
+/* Long-form body copy rendered from Markdown (project pages, manifesto). Measure is
+   capped at ~68 characters — the point where the eye starts losing the line. */
+
+.prose {
+  max-width: 68ch;
+  font-size: var(--fs-md);
+  line-height: 1.65;
+  color: var(--text);
+}
+
+.prose > * + * {
+  margin-top: var(--space-4);
+}
+
+.prose h2 {
+  font-size: var(--fs-xl);
+  margin-top: var(--space-10);
+  margin-bottom: var(--space-3);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+}
+
+.prose h2:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.prose h3 {
+  font-size: var(--fs-lg);
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-2);
+}
+
+.prose strong {
+  color: var(--text-h);
+  font-weight: 600;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: var(--space-5);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.prose li::marker {
+  color: var(--accent-text);
+}
+
+.prose li > ul,
+.prose li > ol {
+  margin-top: var(--space-2);
+}
+
+.prose blockquote {
+  margin: var(--space-5) 0;
+  padding: var(--space-2) var(--space-5);
+  border-left: 3px solid var(--accent-border);
+  background: var(--accent-bg);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text-h);
+}
+
+.prose blockquote > * + * {
+  margin-top: var(--space-3);
+}
+
+/* Shiki highlights fenced code at build time and inlines the colours, so no
+   highlighter is shipped to the browser. Only the frame is ours. */
+.prose pre {
+  margin: var(--space-5) 0;
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+}
+
+.prose :not(pre) > code {
+  font-size: 0.875em;
+  padding: 2px 6px;
+  background: var(--code-bg);
+  border-radius: 4px;
+  color: var(--text-h);
+  /* An inline URL or filesystem path has no break opportunities, so on a narrow
+     screen it pushes the page sideways. Allow a break anywhere inside it. */
+  overflow-wrap: anywhere;
+}
+
+/* Tables scroll inside their own box; the page itself never scrolls sideways. */
+.prose .table-scroll {
+  overflow-x: auto;
+  margin: var(--space-5) 0;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+
+.prose th,
+.prose td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.prose th {
+  font-weight: 500;
+  color: var(--text-h);
+  white-space: nowrap;
+}
+
+.prose tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: var(--space-8) 0;
+}
+
+/* Shiki dual-theme. Astro inlines both palettes as CSS variables on every token
+   and leaves the choice to the page; the light one is the default, and this
+   flips the whole block in dark mode. Keyed off data-theme, not a media query,
+   so it follows the site"s own toggle rather than the OS. */
+[data-theme="dark"] .prose .astro-code,
+[data-theme="dark"] .prose .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+/* ------------------------------------------------------------ shared blocks */
+
+.section__lede {
+  margin-bottom: var(--space-8);
+}
+
+.split {
+  display: grid;
+  gap: clamp(var(--space-6), 4vw, var(--space-12));
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+
+.split > * {
+  min-width: 0;
+}
+
+.split--top {
+  align-items: start;
+}
+
+@media (max-width: 56rem) {
+  .split {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Pills: status, type, changelog kind. Neutral by default; the modifier picks
+   one of the token sets so every badge on the site speaks the same colours. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: var(--code-bg);
+  color: var(--text);
+  font: 500 var(--fs-2xs) / 1.5 var(--sans);
+  white-space: nowrap;
+}
+
+.badge--leaf {
+  background: var(--leaf-bg);
+  border-color: var(--leaf-border);
+  color: var(--leaf-text);
+}
+
+.badge--accent {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+  color: var(--accent-text);
+}
+
+.badge--warn {
+  background: var(--warn-bg);
+  border-color: var(--warn-border);
+  color: var(--warn);
+}
+
+.meta {
+  font: 400 var(--fs-xs) / 1.4 var(--mono);
+  color: var(--text);
+}
+
+/* Papyra's "Honestly: this is young software" box. */
+.callout {
+  padding: var(--space-6);
+  border: 1px solid var(--warn-border);
+  border-left-width: 3px;
+  border-radius: var(--radius-md);
+  background: var(--warn-bg);
+}
+
+.callout h2 {
+  font-size: var(--fs-lg);
+  margin-bottom: var(--space-3);
+  color: var(--warn);
+}
+
+.callout p {
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  margin-bottom: var(--space-3);
+}
+
+.callout p:last-child {
+  margin-bottom: 0;
+}
+
+.page-head {
+  padding-block: clamp(var(--space-10), 7vw, 6rem) var(--space-8);
+}
+
+.page-head .lede {
+  max-width: 56ch;
+}

@@ -1,0 +1,42 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+---
+
+<Base title="Page not found" description="That page does not exist.">
+  <section class="section">
+    <div class="wrap wrap--narrow notfound">
+      <p class="eyebrow">404</p>
+      <h1>Nothing here</h1>
+      <p class="lede">
+        That page does not exist — it may have moved, or blown away with the petals.
+      </p>
+      <p class="notfound__actions">
+        <a class="btn" href="/">
+          Back to the home page
+        </a>
+        <a class="btn btn--ghost" href="/projects/">
+          Browse projects <Icon name="arrow-right" size={16} />
+        </a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .notfound {
+    text-align: center;
+  }
+
+  .notfound .lede {
+    margin-inline: auto;
+  }
+
+  .notfound__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: center;
+    margin-top: var(--space-8);
+  }
+</style>

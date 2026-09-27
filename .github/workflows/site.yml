@@ -10,8 +10,11 @@ name: site
 # The site is a Cloudflare Worker with static assets (worker "lyfie-org",
 # custom domain www.lyfie.org), not a Pages project:
 #   main          → `wrangler deploy`          → production
-#   anything else → `wrangler versions upload` → preview URL only, production
-#                   untouched: https://<branch>-lyfie-org.<subdomain>.workers.dev
+#   development   → `wrangler versions upload` → preview URL only, production
+#                   untouched: https://development-lyfie-org.<subdomain>.workers.dev
+#
+# Push-only by design: pull requests, manual runs and other branches trigger
+# nothing. Merging development into main is a push to main → production.
 #
 # Requires two repository secrets, added by hand in Settings → Secrets:
 #   CLOUDFLARE_API_TOKEN    — scoped to "Workers Scripts — Edit" on the account
@@ -23,12 +26,6 @@ on:
     paths-ignore:
       - "**.md"
       - ".docs/**"
-  pull_request:
-    paths-ignore:
-      - "**.md"
-      - ".docs/**"
-  # So a deploy can be re-run without an empty commit.
-  workflow_dispatch:
 
 concurrency:
   group: site-${{ github.ref }}
@@ -67,53 +64,55 @@ jobs:
       - name: Build the site
         run: pnpm build
 
-      # Validates the generated Worker config and asset bundle exactly as the
-      # real deploy will read them, without needing credentials.
+      # Fonts are self-hosted and the CSP pins font-src to 'self', so a stray
+      # third-party font link would silently break type in production.
+      - name: Verify no third-party font origin shipped
+        run: pnpm check:fonts
+
+      # Validates wrangler.jsonc and the dist/ asset bundle exactly as the real
+      # deploy will read them, without needing credentials.
       - name: Wrangler deploy dry-run
         run: pnpm cf:check
 
-      # Serves dist/ through workerd (vite preview + @cloudflare/vite-plugin) and
-      # checks the shell, hashed assets, static files and — as a hard gate — the
-      # SPA fallback: a silently-dropped not_found_handling means deep links 404
-      # in production.
+      # Serves dist/ through `wrangler dev` (real workerd) and checks every page,
+      # hashed assets, fonts, the _headers security policy, and that unknown
+      # paths get the styled 404 with a real 404 status.
       - name: Smoke test in the Workers runtime
         run: pnpm smoke
+
+      # Sideways scroll is invisible until somebody opens the site on a phone.
+      # Every built page is loaded at 320px and 1440px in a real browser.
+      - name: Install Chromium for the layout check
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Check no page scrolls horizontally
+        run: pnpm check:layout
 
       # Wrangler is run straight from the repo's own devDependencies rather than
       # through cloudflare/wrangler-action, which installs its own copy; calling
       # it directly pins the deploy to the wrangler version the lockfile resolves.
       #
       # Secrets come in as environment variables, which wrangler reads natively.
-      #
-      # Skipped for pull requests from forks: GitHub withholds secrets there, so
-      # the deploy could only ever fail. Everything above still runs, so an
-      # outside contribution is still fully built and checked.
       - name: Deploy to Cloudflare Workers
-        if: >-
-          github.event_name != 'pull_request' ||
-          github.event.pull_request.head.repo.full_name == github.repository
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          BRANCH: ${{ github.head_ref || github.ref_name }}
-          MESSAGE: ${{ github.sha }} (${{ github.event_name }})
+          BRANCH: ${{ github.ref_name }}
+          MESSAGE: ${{ github.sha }}
         run: |
           if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
             echo "::error::CLOUDFLARE_API_TOKEN and/or CLOUDFLARE_ACCOUNT_ID are not set. Add them under Settings → Secrets and variables → Actions."
             exit 1
           fi
 
-          if [ "$BRANCH" = "main" ] && [ "$GITHUB_EVENT_NAME" != "pull_request" ]; then
+          if [ "$BRANCH" = "main" ]; then
             # Production: new version, promoted to 100% → www.lyfie.org
             pnpm exec wrangler deploy --message "$MESSAGE" | tee deploy.log
             echo "### Deployed to production: https://www.lyfie.org" >> "$GITHUB_STEP_SUMMARY"
           else
-            # Preview: upload a version without deploying it. The alias must be a
-            # DNS label: lowercase alphanumerics and hyphens, and short enough
-            # that "<alias>-lyfie-org" still fits in 63 characters.
-            alias=$(echo "$BRANCH" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//' | cut -c1-40 | sed -E 's/-+$//')
+            # development → preview: upload a version without deploying it.
             pnpm exec wrangler versions upload \
-              --preview-alias "$alias" \
+              --preview-alias development \
               --message "$MESSAGE" | tee deploy.log
             url=$(grep -oE 'https://[a-z0-9-]+-lyfie-org\.[a-z0-9-]+\.workers\.dev' deploy.log | tail -1)
             echo "### Preview (${BRANCH}): ${url:-see deploy log}" >> "$GITHUB_STEP_SUMMARY"
