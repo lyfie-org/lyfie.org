@@ -1,16 +1,115 @@
 :root {
-  --color-bg: #f8f6f2;
-  --color-canvas-soft: #f5f1e8;
-  --color-surface: #f0e9dc;
-  --color-text: #2d2419;
-  --color-text-muted: #695b4a;
-  --color-border: #dfd8ca;
+  color-scheme: light;
+
+  --color-bg: #f2f8e8;
+  --color-bg-top: rgb(233 247 213 / 0.84);
+  --color-bg-bottom: rgb(220 239 191 / 0.92);
+  --ambient-pink: rgb(233 162 194 / 0.2);
+  --ambient-green: rgb(150 194 97 / 0.28);
+  --ambient-neutral: rgb(255 255 255 / 0.9);
+
+  --color-surface: rgb(255 255 255 / 0.26);
+  --color-surface-soft: rgb(255 255 255 / 0.2);
+  --color-surface-elevated: linear-gradient(
+    145deg,
+    rgb(255 255 255 / 0.42) 0%,
+    rgb(255 255 255 / 0.22) 100%
+  );
+
+  --color-text: #27341f;
+  --color-text-muted: #4f603f;
+  --color-text-soft: #677957;
+
+  --color-border: rgb(230 152 188 / 0.48);
+  --color-border-soft: rgb(230 152 188 / 0.32);
+
+  --color-accent: #d47fa6;
+  --color-accent-strong: #b45a86;
+  --color-accent-soft: #edbfd8;
+
+  --focus-ring: rgb(212 105 156 / 0.82);
+
+  --shadow-soft: 0 10px 24px rgb(19 26 12 / 0.16);
+  --shadow-strong: 0 24px 54px rgb(17 23 11 / 0.24);
+
   --container-width: 68rem;
   --space-4: 1rem;
+
   --font-body-fallback: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
-  --font-display-fallback:
-    "Poppins", "Avenir Next Rounded", "Trebuchet MS", sans-serif;
+  --font-display-fallback: "Poppins", "Avenir Next Rounded", "Trebuchet MS", sans-serif;
   --font-mono-fallback: "Fira Code", "Consolas", "Menlo", monospace;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-bg: #191018;
+  --color-bg-top: rgb(95 48 74 / 0.6);
+  --color-bg-bottom: rgb(56 28 46 / 0.82);
+  --ambient-pink: rgb(211 126 167 / 0.24);
+  --ambient-green: rgb(121 169 89 / 0.16);
+  --ambient-neutral: rgb(60 31 48 / 0.56);
+
+  --color-surface: rgb(28 16 24 / 0.42);
+  --color-surface-soft: rgb(28 16 24 / 0.34);
+  --color-surface-elevated: linear-gradient(
+    148deg,
+    rgb(36 21 32 / 0.68) 0%,
+    rgb(36 21 32 / 0.44) 100%
+  );
+
+  --color-text: #f7deea;
+  --color-text-muted: #e6bdd1;
+  --color-text-soft: #d29db9;
+
+  --color-border: rgb(156 210 117 / 0.34);
+  --color-border-soft: rgb(156 210 117 / 0.24);
+
+  --color-accent: #91c862;
+  --color-accent-strong: #6ea147;
+  --color-accent-soft: #b2de8b;
+
+  --focus-ring: rgb(153 210 110 / 0.86);
+
+  --shadow-soft: 0 12px 28px rgb(2 7 2 / 0.42);
+  --shadow-strong: 0 24px 58px rgb(2 7 2 / 0.52);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+
+    --color-bg: #191018;
+    --color-bg-top: rgb(95 48 74 / 0.6);
+    --color-bg-bottom: rgb(56 28 46 / 0.82);
+    --ambient-pink: rgb(211 126 167 / 0.24);
+    --ambient-green: rgb(121 169 89 / 0.16);
+    --ambient-neutral: rgb(60 31 48 / 0.56);
+
+    --color-surface: rgb(28 16 24 / 0.42);
+    --color-surface-soft: rgb(28 16 24 / 0.34);
+    --color-surface-elevated: linear-gradient(
+      148deg,
+      rgb(36 21 32 / 0.68) 0%,
+      rgb(36 21 32 / 0.44) 100%
+    );
+
+    --color-text: #f7deea;
+    --color-text-muted: #e6bdd1;
+    --color-text-soft: #d29db9;
+
+    --color-border: rgb(156 210 117 / 0.34);
+    --color-border-soft: rgb(156 210 117 / 0.24);
+
+    --color-accent: #91c862;
+    --color-accent-strong: #6ea147;
+    --color-accent-soft: #b2de8b;
+
+    --focus-ring: rgb(153 210 110 / 0.86);
+
+    --shadow-soft: 0 12px 28px rgb(2 7 2 / 0.42);
+    --shadow-strong: 0 24px 58px rgb(2 7 2 / 0.52);
+  }
 }
 
 *,
@@ -31,11 +130,10 @@ body {
   line-height: 1.5;
   color: var(--color-text);
   background:
-    radial-gradient(
-      70rem 28rem at 50% -8%,
-      rgb(255 255 255 / 0.95),
-      rgb(255 255 255 / 0)
-    ),
+    radial-gradient(70rem 28rem at 12% 6%, var(--ambient-pink), transparent 65%),
+    radial-gradient(68rem 30rem at 92% 94%, var(--ambient-green), transparent 68%),
+    radial-gradient(72rem 30rem at 50% -10%, var(--ambient-neutral), transparent 75%),
+    linear-gradient(180deg, var(--color-bg-top) 0%, var(--color-bg-bottom) 100%),
     var(--color-bg);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;

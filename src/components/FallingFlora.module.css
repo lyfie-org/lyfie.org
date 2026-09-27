@@ -1,9 +1,10 @@
 .layer {
+  --flora-shadow: rgb(76 97 50 / 0.14);
   position: absolute;
   inset: 0;
+  z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  z-index: 0;
 }
 
 .particle {
@@ -13,8 +14,7 @@
   width: var(--size);
   height: var(--size);
   opacity: 0;
-  transform: translate3d(var(--x0), var(--y0), 0) rotate(var(--r0))
-    scale(var(--scale));
+  transform: translate3d(var(--x0), var(--y0), 0) rotate(var(--r0)) scale(var(--scale));
   transform-origin: center;
   animation: fall-diagonal var(--duration) linear infinite;
   animation-delay: var(--delay);
@@ -28,11 +28,10 @@
 }
 
 .glyph {
-  display: block;
   width: 100%;
   height: 100%;
   opacity: var(--opacity);
-  filter: drop-shadow(0 2px 3px rgb(38 58 18 / 0.12));
+  filter: drop-shadow(0 2px 3px var(--flora-shadow));
   animation: spin var(--spin-duration) ease-in-out infinite alternate;
 }
 
@@ -44,41 +43,36 @@
 @keyframes fall-diagonal {
   0% {
     opacity: 0;
-    transform: translate3d(var(--x0), var(--y0), 0) rotate(var(--r0))
-      scale(var(--scale));
+    transform: translate3d(var(--x0), var(--y0), 0) rotate(var(--r0)) scale(var(--scale));
   }
 
-  10% {
-    opacity: var(--opacity);
-  }
-
+  10%,
   90% {
     opacity: var(--opacity);
   }
 
   100% {
     opacity: 0;
-    transform: translate3d(var(--x1), var(--y1), 0) rotate(var(--r1))
-      scale(var(--scale));
+    transform: translate3d(var(--x1), var(--y1), 0) rotate(var(--r1)) scale(var(--scale));
   }
 }
 
 @keyframes sway {
-  0% {
+  from {
     transform: translateX(calc(var(--drift) * -1));
   }
 
-  100% {
+  to {
     transform: translateX(var(--drift));
   }
 }
 
 @keyframes spin {
-  0% {
+  from {
     transform: rotate(-16deg);
   }
 
-  100% {
+  to {
     transform: rotate(16deg);
   }
 }

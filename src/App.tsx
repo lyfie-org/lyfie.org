@@ -1,28 +1,27 @@
 import styles from "./App.module.css";
 import FallingFlora from "./components/FallingFlora";
+import Navbar from "./components/layout/Navbar";
+import SiteFooter from "./components/layout/SiteFooter";
+import { useTheme } from "./hooks/useTheme";
+import HomePage from "./pages/HomePage";
 
 function App() {
+  const { theme, setTheme } = useTheme();
+
   return (
-    <section className={styles.page}>
+    <div className={styles.page} id="top">
       <FallingFlora />
-      <div className={styles.card}>
-        <div className={styles.logoWrap} aria-hidden="true">
-          <img
-            src="/logo.png"
-            alt=""
-            className={styles.logo}
-            width={140}
-            height={140}
-          />
-        </div>
-        <p className={styles.status}>Site Update In Progress</p>
-        <h1 className={styles.title}>Page Under Construction</h1>
-        <p className={styles.description}>
-          We are currently rebuilding Lyfie.org. Please check back soon for the
-          updated experience.
-        </p>
-      </div>
-    </section>
+      <Navbar
+        theme={theme}
+        onToggleTheme={() =>
+          setTheme((activeTheme) => (activeTheme === "light" ? "dark" : "light"))
+        }
+      />
+      <main className={styles.main}>
+        <HomePage />
+      </main>
+      <SiteFooter />
+    </div>
   );
 }
 
