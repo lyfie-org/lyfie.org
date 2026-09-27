@@ -2,21 +2,25 @@
   "name": "lyfie-org",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@10.29.2",
-  "description": "Vite + React website for Lyfie.org",
+  "description": "lyfie.org — home of the Lyfie open-source organisation (Astro, static, Cloudflare Workers)",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "start": "vite preview",
-    "preview": "vite preview",
-    "deploy": "pnpm build && pnpm wrangler deploy",
-    "lint": "eslint src --max-warnings=0",
-    "typecheck": "tsc --noEmit",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "pnpm build && wrangler dev --port 4173",
+    "deploy": "pnpm build && wrangler deploy",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "astro check",
     "format": "prettier --check .",
     "format:write": "prettier --write .",
+    "fonts": "node scripts/fetch-fonts.mjs",
+    "og": "node scripts/og.mjs",
     "cf:check": "wrangler deploy --dry-run",
     "smoke": "node scripts/smoke-test.mjs",
-    "validate": "pnpm format && pnpm lint && pnpm typecheck && pnpm build && pnpm cf:check && pnpm smoke"
+    "check:fonts": "node scripts/check-fonts.mjs",
+    "check:layout": "node scripts/check-layout.mjs",
+    "validate": "pnpm format && pnpm lint && pnpm typecheck && pnpm build && pnpm check:fonts && pnpm cf:check && pnpm smoke && pnpm check:layout"
   },
   "engines": {
     "node": ">=22.0.0"
@@ -27,9 +31,9 @@
   },
   "keywords": [
     "lyfie",
-    "vite",
-    "react",
-    "boilerplate"
+    "open-source",
+    "astro",
+    "cloudflare-workers"
   ],
   "author": "Lyfie Contributors",
   "license": "MIT",
@@ -38,26 +42,22 @@
   },
   "homepage": "https://lyfie.org",
   "dependencies": {
-    "@phosphor-icons/react": "^2.1.10",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "~7.2.10",
+    "sharp": "^0.35.4"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.27.0",
+    "@astrojs/check": "^0.9.10",
     "@eslint/js": "^9.39.1",
     "@types/node": "^25.4.0",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.1.0",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-react-hooks": "^7.0.0",
-    "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "playwright": "^1.63.0",
     "prettier": "^3.8.1",
+    "prettier-plugin-astro": "^1.1.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.1.11",
-    "wrangler": "^4.72.0"
+    "wrangler": "^4.141.0"
   }
 }

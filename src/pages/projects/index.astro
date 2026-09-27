@@ -1,0 +1,169 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+import Icon from "../../components/Icon.astro";
+import { GITHUB_ORG_URL } from "../../data/site";
+
+const projects = (await getCollection("projects")).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const TYPES = [
+  { id: "library", label: "Libraries" },
+  { id: "app", label: "Apps" },
+  { id: "game", label: "Games" }
+] as const;
+
+const count = (type: string) => projects.filter((p) => p.data.type === type).length;
+---
+
+<Base
+  title="Projects"
+  description="Every open-source project Lyfie builds — libraries, apps and games — with an honest status label on each."
+>
+  <section class="page-head">
+    <div class="wrap">
+      <p class="eyebrow">Projects</p>
+      <h1>Everything we make</h1>
+      <p class="lede">
+        Libraries, apps and games — all open source, all free. Each carries a status
+        label, so you know what you are adopting.
+      </p>
+    </div>
+  </section>
+
+  <section class="section directory">
+    <div class="wrap">
+      {/* Filter without JavaScript: radio buttons + :has(). Every card stays in the HTML. */}
+      <fieldset class="filter">
+        <legend class="visually-hidden">Filter by type</legend>
+        <label>
+          <input type="radio" name="type" value="all" checked />
+          <span>
+            All <span class="filter__count">{projects.length}</span>
+          </span>
+        </label>
+        {TYPES.map((t) => (
+          <label>
+            <input type="radio" name="type" value={t.id} disabled={count(t.id) === 0} />
+            <span>
+              {t.label} <span class="filter__count">{count(t.id)}</span>
+            </span>
+          </label>
+        ))}
+      </fieldset>
+
+      <div class="grid projects">
+        {projects.map((project) => (
+          <ProjectCard project={project} />
+        ))}
+      </div>
+
+      <p class="directory__foot">
+        More is on the way. Watch{" "}
+        <a href={GITHUB_ORG_URL} rel="noopener noreferrer">
+          lyfie-org on GitHub <Icon name="external" size={12} />
+        </a>{" "}
+        to see new projects the day they go public.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .directory {
+    padding-top: 0;
+  }
+
+  .filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-8);
+    padding: 0;
+    border: 0;
+  }
+
+  .filter label {
+    position: relative;
+  }
+
+  .filter input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .filter input:disabled {
+    cursor: not-allowed;
+  }
+
+  .filter label > span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    color: var(--text);
+    font: 500 var(--fs-sm) / 1 var(--sans);
+    transition:
+      border-color var(--dur-fast) var(--ease),
+      background var(--dur-fast) var(--ease),
+      color var(--dur-fast) var(--ease);
+  }
+
+  .filter input:hover:not(:disabled) + span {
+    border-color: var(--accent-border);
+    color: var(--text-h);
+  }
+
+  .filter input:checked + span {
+    border-color: var(--accent-border);
+    background: var(--accent-bg);
+    color: var(--text-h);
+  }
+
+  .filter input:focus-visible + span {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .filter input:disabled + span {
+    opacity: 0.5;
+  }
+
+  .filter__count {
+    font: 400 var(--fs-2xs) / 1 var(--mono);
+    color: var(--text);
+  }
+
+  .projects {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  }
+
+  .directory:has(input[value="library"]:checked)
+    :global(.project:not([data-type="library"])),
+  .directory:has(input[value="app"]:checked) :global(.project:not([data-type="app"])),
+  .directory:has(input[value="game"]:checked) :global(.project:not([data-type="game"])) {
+    display: none;
+  }
+
+  .directory__foot {
+    margin: var(--space-10) 0 0;
+    font-size: var(--fs-sm);
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>

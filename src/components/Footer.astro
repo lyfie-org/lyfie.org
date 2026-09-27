@@ -1,0 +1,195 @@
+---
+import { getCollection } from "astro:content";
+import Icon from "./Icon.astro";
+import {
+  CREATOR_URL,
+  GITHUB_ORG_URL,
+  SPONSORS_URL,
+  X_URL,
+  SITE_NAME
+} from "../data/site";
+
+const year = new Date().getFullYear();
+const projects = (await getCollection("projects")).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+type Link = { href: string; label: string; external?: boolean };
+
+const columns: { title: string; links: Link[] }[] = [
+  {
+    title: "Projects",
+    links: [
+      ...projects.map((p) => ({ href: `/projects/${p.id}/`, label: p.data.name })),
+      { href: "/projects/", label: "All projects" }
+    ]
+  },
+  {
+    title: "Organisation",
+    links: [
+      { href: "/manifesto/", label: "Manifesto" },
+      { href: "/changelog/", label: "Changelog" },
+      { href: "/contribute/", label: "Contribute" }
+    ]
+  },
+  {
+    title: "Elsewhere",
+    links: [
+      { href: GITHUB_ORG_URL, label: "GitHub", external: true },
+      { href: SPONSORS_URL, label: "GitHub Sponsors", external: true },
+      { href: X_URL, label: "X / Twitter", external: true },
+      { href: CREATOR_URL, label: "rahulnsanand.com", external: true }
+    ]
+  }
+];
+---
+
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div class="site-footer__about">
+      <p class="site-footer__mark">lyfie</p>
+      <p class="site-footer__blurb">
+        Free, open-source software — libraries, apps and games — with no paywalls, no
+        trackers and no lock-in.
+      </p>
+      <p class="site-footer__icons">
+        <a href={GITHUB_ORG_URL} rel="noopener noreferrer" aria-label="Lyfie on GitHub">
+          <Icon name="github" size={18} />
+        </a>
+        <a href={SPONSORS_URL} rel="noopener noreferrer" aria-label="Sponsor Lyfie">
+          <Icon name="heart" size={16} />
+        </a>
+      </p>
+    </div>
+
+    {columns.map((col) => (
+      <nav class="site-footer__col" aria-label={col.title}>
+        <h2>{col.title}</h2>
+        <ul>
+          {col.links.map((link) => (
+            <li>
+              <a href={link.href} rel={link.external ? "noopener noreferrer" : undefined}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    ))}
+  </div>
+
+  <div class="wrap site-footer__legal">
+    <p>
+      © {year} {SITE_NAME} · Open source, always
+    </p>
+    <p>Built and hosted without a single third-party request.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--space-12);
+    border-top: 1px solid var(--border);
+    background: color-mix(in srgb, var(--surface) 60%, transparent);
+    padding-block: var(--space-10) var(--space-6);
+  }
+
+  .site-footer__inner {
+    display: grid;
+    gap: var(--space-8);
+    grid-template-columns: 1.4fr repeat(3, 1fr);
+    align-items: start;
+  }
+
+  .site-footer__mark {
+    font: 400 var(--fs-xl) / 1 var(--heading);
+    color: var(--text-h);
+    letter-spacing: -0.01em;
+    margin: 0 0 var(--space-2);
+  }
+
+  .site-footer__blurb {
+    font-size: var(--fs-sm);
+    line-height: 1.55;
+    color: var(--text);
+    max-width: 32ch;
+  }
+
+  .site-footer__icons {
+    display: flex;
+    gap: var(--space-3);
+    margin: 0;
+  }
+
+  .site-footer__icons a {
+    display: inline-grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    color: var(--text);
+    transition:
+      border-color var(--dur) var(--ease),
+      color var(--dur) var(--ease);
+  }
+
+  .site-footer__icons a:hover {
+    border-color: var(--accent-border);
+    color: var(--text-h);
+  }
+
+  .site-footer__col h2 {
+    font: 500 var(--fs-xs) / 1 var(--sans);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-h);
+    margin: 0 0 var(--space-3);
+  }
+
+  .site-footer__col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .site-footer__col a {
+    font-size: var(--fs-sm);
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .site-footer__col a:hover {
+    color: var(--accent-text);
+    text-decoration: underline;
+  }
+
+  .site-footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-top: var(--space-8);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+  }
+
+  .site-footer__legal p {
+    margin: 0;
+    font-size: var(--fs-xs);
+    color: var(--text);
+  }
+
+  @media (max-width: 56rem) {
+    .site-footer__inner {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .site-footer__about {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

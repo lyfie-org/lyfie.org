@@ -1,0 +1,14 @@
+# Lyfie
+
+> Lyfie (lyfie.org) is an open-source organisation that builds free libraries, apps and games with no paywalls, no trackers and no lock-in. Source: https://github.com/lyfie-org
+
+## Projects
+
+- [Luthor](https://www.lyfie.org/projects/luthor/): TypeScript-first rich-text editor for React, built on Lexical. MIT. Stable. Site: https://www.luthor.fyi — npm: @lyfie/luthor, @lyfie/luthor-headless
+- [Papyra](https://www.lyfie.org/projects/papyra/): A calm, self-hosted home for your notes; every note is a plain Markdown file. GPL-3.0. Beta. Site: https://papyra.app — Docker: lyfie/papyra
+
+## Organisation
+
+- [Manifesto](https://www.lyfie.org/manifesto/): why Lyfie exists and what it promises
+- [Changelog](https://www.lyfie.org/changelog/): notable releases across projects
+- [Contribute](https://www.lyfie.org/contribute/): how to help, sponsor, report bugs

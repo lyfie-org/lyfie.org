@@ -1,0 +1,178 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import StatusBadge from "./StatusBadge.astro";
+import CodeBlock from "./CodeBlock.astro";
+import Icon from "./Icon.astro";
+
+interface Props {
+  project: CollectionEntry<"projects">;
+  /** Show the install snippet (home page flagship cards). */
+  withInstall?: boolean;
+}
+
+const { project, withInstall = false } = Astro.props;
+const p = project.data;
+const href = `/projects/${project.id}/`;
+const firstInstallLine = p.install?.trim().split("\n")[0];
+---
+
+<article class="card project" data-type={p.type} style={`--project: ${p.accent}`}>
+  <header class="project__head">
+    {p.logo ? (
+      <Image
+        class="project__logo"
+        src={p.logo}
+        alt=""
+        width={44}
+        height={44}
+        densities={[1, 2]}
+      />
+    ) : (
+      <span class="project__logo project__logo--blank" aria-hidden="true">
+        {p.name.charAt(0)}
+      </span>
+    )}
+    <div class="project__title">
+      <h3>
+        <a href={href}>{p.name}</a>
+      </h3>
+      <p class="meta">
+        <span class="project__dot" aria-hidden="true"></span>
+        {p.type}
+        {p.license && ` · ${p.license}`}
+      </p>
+    </div>
+    <StatusBadge status={p.status} />
+  </header>
+
+  <p class="project__tagline">{p.tagline}</p>
+
+  {withInstall && firstInstallLine && (
+    <CodeBlock code={p.install!} label={p.installLabel} lang="bash" />
+  )}
+
+  {p.points.length > 0 && <p class="project__points">{p.points.join(" · ")}</p>}
+
+  <footer class="project__links">
+    <a href={href}>
+      Details <Icon name="arrow-right" size={14} />
+    </a>
+    {p.site && (
+      <a href={p.site} rel="noopener noreferrer">
+        Website
+      </a>
+    )}
+    {p.repo && (
+      <a href={p.repo} rel="noopener noreferrer">
+        GitHub
+      </a>
+    )}
+  </footer>
+</article>
+
+<style>
+  .project {
+    gap: var(--space-4);
+    min-width: 0;
+  }
+
+  .project:hover {
+    box-shadow: var(--shadow-card-hover);
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  }
+
+  .project__head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-3);
+    align-items: center;
+  }
+
+  .project__logo {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .project__logo--blank {
+    display: grid;
+    place-items: center;
+    font: 400 var(--fs-xl) / 1 var(--heading);
+    color: var(--text-h);
+    background: var(--code-bg);
+  }
+
+  .project__title h3 {
+    margin: 0;
+    font-size: var(--fs-xl);
+  }
+
+  .project__title h3 a {
+    color: var(--text-h);
+    text-decoration: none;
+  }
+
+  .project__title h3 a:hover {
+    color: var(--accent-text);
+  }
+
+  .project__title .meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: var(--space-1) 0 0;
+  }
+
+  /* The product's own brand colour, as a small dot only — Lyfie's palette owns
+     the page, each project keeps its identity. */
+  .project__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--project);
+  }
+
+  .project__tagline {
+    margin: 0;
+    font-size: var(--fs-md);
+    line-height: 1.5;
+    color: var(--text-h);
+  }
+
+  .project__points {
+    margin: 0;
+    font-size: var(--fs-xs);
+    color: var(--accent-text);
+  }
+
+  .project__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin-top: auto;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border);
+    font-size: var(--fs-sm);
+  }
+
+  .project__links a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .project__links a:hover {
+    color: var(--accent-text);
+    text-decoration: underline;
+  }
+
+  .project__links a:first-child {
+    color: var(--accent-text);
+    font-weight: 500;
+  }
+</style>

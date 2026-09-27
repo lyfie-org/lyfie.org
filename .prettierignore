@@ -1,7 +1,8 @@
 node_modules/
 dist/
-.next/
+.astro/
 .wrangler/
 .docs/
 coverage/
 pnpm-lock.yaml
+src/styles/fonts.css

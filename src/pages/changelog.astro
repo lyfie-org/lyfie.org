@@ -1,0 +1,44 @@
+---
+import Base from "../layouts/Base.astro";
+import ChangelogList from "../components/ChangelogList.astro";
+import Icon from "../components/Icon.astro";
+import { GITHUB_ORG_URL } from "../data/site";
+---
+
+<Base
+  title="Changelog"
+  description="What Lyfie has shipped lately, across every project — newest first."
+>
+  <section class="page-head">
+    <div class="wrap wrap--narrow">
+      <p class="eyebrow">Built in public</p>
+      <h1>Changelog</h1>
+      <p class="lede">
+        The notable releases, features and news across every Lyfie project, newest first.
+        Each project keeps its own detailed changelog too — follow the links.
+      </p>
+    </div>
+  </section>
+
+  <section class="section log-section">
+    <div class="wrap wrap--narrow">
+      <ChangelogList />
+      <p class="log-foot">
+        <a class="btn btn--ghost" href={GITHUB_ORG_URL} rel="noopener noreferrer">
+          <Icon name="github" size={16} />
+          Everything on GitHub
+        </a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .log-section {
+    padding-top: 0;
+  }
+
+  .log-foot {
+    margin-top: var(--space-10);
+  }
+</style>

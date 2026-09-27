@@ -1,0 +1,32 @@
+---
+// Honest maturity label. Unlabelled WIP next to stable work erodes trust, so
+// every project carries one.
+interface Props {
+  status: "stable" | "beta" | "alpha" | "planned";
+}
+
+const { status } = Astro.props;
+
+const variants = {
+  stable: { cls: "badge--leaf", label: "Stable" },
+  beta: { cls: "badge--warn", label: "Beta" },
+  alpha: { cls: "badge--accent", label: "Alpha" },
+  planned: { cls: "", label: "Planned" }
+} as const;
+
+const { cls, label } = variants[status];
+---
+
+<span class:list={["badge", cls]}>
+  <span class="dot" aria-hidden="true"></span>
+  {label}
+</span>
+
+<style>
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+</style>

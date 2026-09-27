@@ -1,0 +1,161 @@
+---
+import { getCollection, render } from "astro:content";
+
+interface Props {
+  /** Show only the newest N entries, titles only (home page). */
+  limit?: number;
+}
+
+const { limit } = Astro.props;
+const compact = limit !== undefined;
+
+const all = (await getCollection("changelog")).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+const entries = await Promise.all(
+  (compact ? all.slice(0, limit) : all).map(async (e) => ({
+    ...e,
+    Content: compact ? null : (await render(e)).Content,
+    hasBody: Boolean(e.body?.trim())
+  }))
+);
+
+const projects = new Map(
+  (await getCollection("projects")).map((p) => [p.id, p.data.name] as const)
+);
+
+const dateFormat = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC"
+});
+
+const kindClass = {
+  release: "badge--leaf",
+  feature: "badge--accent",
+  fix: "badge--warn",
+  news: ""
+} as const;
+---
+
+<ol class:list={["log", { "log--compact": compact }]}>
+  {entries.map(({ data, Content, hasBody }) => (
+    <li class="log__entry">
+      <time class="meta" datetime={data.date.toISOString().slice(0, 10)}>
+        {dateFormat.format(data.date)}
+      </time>
+      <div class="log__body">
+        <p class="log__title">
+          <span class:list={["badge", kindClass[data.kind]]}>{data.kind}</span>
+          {data.project && projects.has(data.project) && (
+            <a class="log__project" href={`/projects/${data.project}/`}>
+              {projects.get(data.project)}
+            </a>
+          )}
+        </p>
+        <p class="log__text">
+          {data.link ? (
+            <a href={data.link} rel="noopener noreferrer">
+              {data.title}
+            </a>
+          ) : (
+            data.title
+          )}
+        </p>
+        {Content && hasBody && (
+          <div class="log__more">
+            <Content />
+          </div>
+        )}
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .log {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .log__entry {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: var(--space-4);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+  }
+
+  .log--compact .log__entry {
+    padding-top: var(--space-4);
+  }
+
+  .log__entry time {
+    padding-top: 3px;
+  }
+
+  .log__body {
+    min-width: 0;
+  }
+
+  .log__title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-1);
+  }
+
+  .log__title .badge {
+    text-transform: capitalize;
+  }
+
+  .log__project {
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .log__project:hover {
+    color: var(--accent-text);
+  }
+
+  .log__text {
+    margin: 0;
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+    color: var(--text-h);
+    overflow-wrap: anywhere;
+  }
+
+  .log__text a {
+    color: inherit;
+    text-decoration-color: var(--accent-border);
+  }
+
+  .log__text a:hover {
+    color: var(--accent-text);
+  }
+
+  .log__more {
+    margin-top: var(--space-2);
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+  }
+
+  .log__more :global(p) {
+    margin: 0;
+  }
+
+  @media (max-width: 30rem) {
+    .log__entry {
+      grid-template-columns: 1fr;
+      gap: var(--space-1);
+    }
+  }
+</style>
