@@ -5,16 +5,8 @@ import styles from "./FallingFlora.module.css";
 
 const PARTICLE_COUNT = 28;
 
-const LEAF_COLORS = [
-  "var(--lyfie-green)",
-  "#c2de8c",
-  "var(--lyfie-green-deep)"
-];
-const PETAL_COLORS = [
-  "var(--lyfie-pink)",
-  "#f9c2c7",
-  "var(--lyfie-pink-deep)"
-];
+const LEAF_COLORS = ["var(--lyfie-green)", "#c7db9f", "var(--lyfie-green-deep)"];
+const PETAL_COLORS = ["var(--lyfie-pink)", "#f9d3df", "var(--lyfie-pink-deep)"];
 
 type FloraKind = "leaf" | "petal";
 
@@ -85,13 +77,10 @@ function FloraShape({
     if (variant === 1) {
       return (
         <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-          <path
-            d="M4 19C4 10 11 4 20 4H28V12C28 21 21 28 12 28H4V19Z"
-            fill={color}
-          />
+          <path d="M4 19C4 10 11 4 20 4H28V12C28 21 21 28 12 28H4V19Z" fill={color} />
           <path
             d="M7 24L24 8M13 27L27 13"
-            stroke="rgb(38 60 18 / 0.4)"
+            stroke="rgb(77 104 55 / 0.33)"
             strokeWidth="1.4"
             strokeLinecap="round"
           />
@@ -108,7 +97,7 @@ function FloraShape({
           />
           <path
             d="M16 6V27M16 13C12 16 10 19 9 22M16 13C20 16 22 19 23 22"
-            stroke="rgb(35 57 16 / 0.33)"
+            stroke="rgb(73 98 52 / 0.31)"
             strokeWidth="1.1"
             strokeLinecap="round"
           />
@@ -124,7 +113,7 @@ function FloraShape({
         />
         <path
           d="M8 23C15 17 19 13 26 8M13 26C13 21 14 18 16 15"
-          stroke="rgb(36 58 17 / 0.32)"
+          stroke="rgb(69 92 49 / 0.3)"
           strokeWidth="1.2"
           strokeLinecap="round"
         />
@@ -152,7 +141,7 @@ function FloraShape({
         />
         <path
           d="M16 8V23"
-          stroke="rgb(130 76 79 / 0.36)"
+          stroke="rgb(155 112 130 / 0.3)"
           strokeWidth="0.95"
           strokeLinecap="round"
         />

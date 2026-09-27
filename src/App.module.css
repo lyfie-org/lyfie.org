@@ -1,113 +1,28 @@
 .page {
+  --shell-inline-padding: clamp(1.1rem, 5vw, 3.2rem);
   position: relative;
   isolation: isolate;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: clamp(1.25rem, 4vw, 3rem);
+  min-height: 100dvh;
+  overflow-x: clip;
 }
 
-.card {
+.main {
   position: relative;
   z-index: 1;
-  width: min(42rem, 100%);
-  border: 1px solid rgb(162 193 98 / 0.5);
-  border-radius: 1.35rem;
-  background: linear-gradient(
-    165deg,
-    rgb(255 255 255 / 0.95) 0%,
-    rgb(255 243 244 / 0.95) 44%,
-    rgb(242 251 226 / 0.96) 100%
-  );
-  padding: clamp(1.75rem, 6vw, 3.25rem);
-  text-align: center;
-  box-shadow:
-    0 20px 48px rgb(54 72 30 / 0.12),
-    0 2px 0 rgb(255 255 255 / 0.7) inset;
-  opacity: 0;
-  transform: translateY(1rem);
-  animation: card-fade-in 620ms ease-out forwards;
+  flex: 1 0 auto;
 }
 
-.logoWrap {
-  display: grid;
-  place-items: center;
-  margin-bottom: 0.35rem;
-  opacity: 0;
-  transform: translateY(0.8rem) scale(0.96);
-  animation: fade-up-in 720ms ease-out 120ms forwards;
-}
-
-.logo {
-  width: clamp(5.5rem, 16vw, 8.25rem);
-  height: auto;
-  filter: drop-shadow(0 12px 24px rgb(76 98 40 / 0.18));
-}
-
-.status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.34rem 0.75rem;
-  border-radius: 999px;
-  border: 1px solid rgb(146 174 90 / 0.45);
-  background: rgb(235 247 206 / 0.8);
-  color: #4c6920;
-  font-family: var(--font-mono), var(--font-mono-fallback);
-  font-size: 0.84rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  opacity: 0;
-  transform: translateY(0.6rem);
-  animation: fade-up-in 680ms ease-out 260ms forwards;
-}
-
-.title {
-  margin-top: 1rem;
-  color: #456126;
-  font-family: var(--font-display), var(--font-display-fallback);
-  line-height: 1;
-  letter-spacing: -0.02em;
-  opacity: 0;
-  transform: translateY(0.45rem);
-  animation: fade-up-in 680ms ease-out 360ms forwards;
-}
-
-.description {
-  margin: 1rem auto 0;
-  max-width: 32ch;
-  color: #65734c;
-  font-size: clamp(1rem, 2.5vw, 1.18rem);
-  line-height: 1.55;
-  opacity: 0;
-  transform: translateY(0.45rem);
-  animation: fade-up-in 760ms ease-out 500ms forwards;
-}
-
-@keyframes card-fade-in {
-  to {
-    opacity: 1;
-    transform: translateY(0);
+@media (max-width: 960px) {
+  .page {
+    --shell-inline-padding: 1.16rem;
   }
 }
 
-@keyframes fade-up-in {
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .card,
-  .logoWrap,
-  .status,
-  .title,
-  .description {
-    animation: none;
-    opacity: 1;
-    transform: none;
+@media (max-width: 680px) {
+  .page {
+    --shell-inline-padding: 0.96rem;
   }
 }
