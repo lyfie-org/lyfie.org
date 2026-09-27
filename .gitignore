@@ -1,10 +1,6 @@
 # dependencies
 node_modules/
 
-# next
-.next/
-out/
-
 # vite
 dist/
 .vite/
