@@ -1,0 +1,120 @@
+name: site
+
+# Builds, validates and deploys the organisation website (lyfie.org).
+#
+# Deployed from Actions rather than through Cloudflare's own Git integration
+# (Workers Builds), so the exact toolchain this repo pins — Node from
+# .node-version and pnpm from package.json "packageManager" — is the one that
+# builds production, and every check below gates the deploy.
+#
+# The site is a Cloudflare Worker with static assets (worker "lyfie-org",
+# custom domain www.lyfie.org), not a Pages project:
+#   main          → `wrangler deploy`          → production
+#   anything else → `wrangler versions upload` → preview URL only, production
+#                   untouched: https://<branch>-lyfie-org.<subdomain>.workers.dev
+#
+# Requires two repository secrets, added by hand in Settings → Secrets:
+#   CLOUDFLARE_API_TOKEN    — scoped to "Workers Scripts — Edit" on the account
+#   CLOUDFLARE_ACCOUNT_ID
+
+on:
+  push:
+    branches: [main, development]
+    paths-ignore:
+      - "**.md"
+      - ".docs/**"
+  pull_request:
+    paths-ignore:
+      - "**.md"
+      - ".docs/**"
+  # So a deploy can be re-run without an empty commit.
+  workflow_dispatch:
+
+concurrency:
+  group: site-${{ github.ref }}
+  # Never cancel a production deploy halfway; superseded previews can go.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+
+      # Version comes from package.json "packageManager".
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Format check
+        run: pnpm format
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Build the site
+        run: pnpm build
+
+      # Validates the generated Worker config and asset bundle exactly as the
+      # real deploy will read them, without needing credentials.
+      - name: Wrangler deploy dry-run
+        run: pnpm cf:check
+
+      # Serves dist/ through workerd (vite preview + @cloudflare/vite-plugin) and
+      # checks the shell, hashed assets, static files and — as a hard gate — the
+      # SPA fallback: a silently-dropped not_found_handling means deep links 404
+      # in production.
+      - name: Smoke test in the Workers runtime
+        run: pnpm smoke
+
+      # Wrangler is run straight from the repo's own devDependencies rather than
+      # through cloudflare/wrangler-action, which installs its own copy; calling
+      # it directly pins the deploy to the wrangler version the lockfile resolves.
+      #
+      # Secrets come in as environment variables, which wrangler reads natively.
+      #
+      # Skipped for pull requests from forks: GitHub withholds secrets there, so
+      # the deploy could only ever fail. Everything above still runs, so an
+      # outside contribution is still fully built and checked.
+      - name: Deploy to Cloudflare Workers
+        if: >-
+          github.event_name != 'pull_request' ||
+          github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+          MESSAGE: ${{ github.sha }} (${{ github.event_name }})
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN and/or CLOUDFLARE_ACCOUNT_ID are not set. Add them under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+          if [ "$BRANCH" = "main" ] && [ "$GITHUB_EVENT_NAME" != "pull_request" ]; then
+            # Production: new version, promoted to 100% → www.lyfie.org
+            pnpm exec wrangler deploy --message "$MESSAGE" | tee deploy.log
+            echo "### Deployed to production: https://www.lyfie.org" >> "$GITHUB_STEP_SUMMARY"
+          else
+            # Preview: upload a version without deploying it. The alias must be a
+            # DNS label: lowercase alphanumerics and hyphens, and short enough
+            # that "<alias>-lyfie-org" still fits in 63 characters.
+            alias=$(echo "$BRANCH" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//' | cut -c1-40 | sed -E 's/-+$//')
+            pnpm exec wrangler versions upload \
+              --preview-alias "$alias" \
+              --message "$MESSAGE" | tee deploy.log
+            url=$(grep -oE 'https://[a-z0-9-]+-lyfie-org\.[a-z0-9-]+\.workers\.dev' deploy.log | tail -1)
+            echo "### Preview (${BRANCH}): ${url:-see deploy log}" >> "$GITHUB_STEP_SUMMARY"
+          fi
