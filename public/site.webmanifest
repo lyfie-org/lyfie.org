@@ -1,0 +1,13 @@
+{
+  "name": "Lyfie",
+  "short_name": "Lyfie",
+  "description": "Free, open-source software — Luthor and Papyra — with no paywalls, no trackers and no lock-in.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#f2ebe0",
+  "theme_color": "#f2ebe0",
+  "icons": [
+    { "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

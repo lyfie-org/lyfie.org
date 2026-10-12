@@ -16,11 +16,25 @@ const TYPES = [
 ] as const;
 
 const count = (type: string) => projects.filter((p) => p.data.type === type).length;
+
+// Finished work first; anything still being built sits under its own heading.
+const GROUPS = [
+  {
+    id: "shipped",
+    title: "Shipped",
+    items: projects.filter((p) => p.data.status !== "planned")
+  },
+  {
+    id: "next",
+    title: "In development",
+    items: projects.filter((p) => p.data.status === "planned")
+  }
+].filter((g) => g.items.length > 0);
 ---
 
 <Base
   title="Projects"
-  description="Every open-source project Lyfie builds — libraries, apps and games — with an honest status label on each."
+  description="Every open-source project Lyfie builds — Luthor, Papyra and what comes next — with an honest status label on each."
 >
   <section class="page-head">
     <div class="wrap">
@@ -37,7 +51,7 @@ const count = (type: string) => projects.filter((p) => p.data.type === type).len
     <div class="wrap">
       {/* Filter without JavaScript: radio buttons + :has(). Every card stays in the HTML. */}
       <fieldset class="filter">
-        <legend class="visually-hidden">Filter by type</legend>
+        <legend class="sr-only">Filter by type</legend>
         <label>
           <input type="radio" name="type" value="all" checked />
           <span>
@@ -54,11 +68,18 @@ const count = (type: string) => projects.filter((p) => p.data.type === type).len
         ))}
       </fieldset>
 
-      <div class="grid projects">
-        {projects.map((project) => (
-          <ProjectCard project={project} />
-        ))}
-      </div>
+      {GROUPS.map((g) => (
+        <section class="group" aria-labelledby={`group-${g.id}`}>
+          <h2 class="group__title" id={`group-${g.id}`}>
+            {g.title} <span class="filter__count">{g.items.length}</span>
+          </h2>
+          <div class="grid projects">
+            {g.items.map((project) => (
+              <ProjectCard project={project} />
+            ))}
+          </div>
+        </section>
+      ))}
 
       <p class="directory__foot">
         More is on the way. Watch{" "}
@@ -153,17 +174,29 @@ const count = (type: string) => projects.filter((p) => p.data.type === type).len
     display: none;
   }
 
+  .group + .group {
+    margin-top: var(--space-12);
+  }
+
+  .group__title {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    font-size: var(--fs-xl);
+    margin-bottom: var(--space-5);
+  }
+
+  /* A heading whose group has nothing left under the active filter goes too. */
+  .directory:has(input[value="library"]:checked)
+    .group:not(:has(:global([data-type="library"]))),
+  .directory:has(input[value="app"]:checked) .group:not(:has(:global([data-type="app"]))),
+  .directory:has(input[value="game"]:checked)
+    .group:not(:has(:global([data-type="game"]))) {
+    display: none;
+  }
+
   .directory__foot {
     margin: var(--space-10) 0 0;
     font-size: var(--fs-sm);
-  }
-
-  .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
   }
 </style>

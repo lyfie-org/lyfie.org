@@ -13,9 +13,20 @@ pnpm dev          # http://localhost:4321
 
 ## Adding content
 
-- **A project:** add `src/content/projects/<slug>.md`. The frontmatter schema is in `src/content.config.ts`. The project then appears on the home page (if `featured: true`), in `/projects/`, at `/projects/<slug>/`, and in the footer.
+- **A project:** add `src/content/projects/<slug>.md`. The frontmatter schema is in `src/content.config.ts`. The project then appears on the home page (if `featured: true`), in `/projects/`, at `/projects/<slug>/`, in the footer and in `/llms.txt`. For unreleased work, set `status: planned` and `page: false`: it shows as an "In development" teaser card with no page and no links.
 - **A changelog entry:** add `src/content/changelog/<date>-<slug>.md`.
 - **A logo:** put it in `src/assets/logos/` and reference it from the project's frontmatter.
+- **Product clips:** short MP4s with WebP posters live in `public/media/<project>/` and are listed, with plain-language captions, in `src/data/media.ts`. The first clip leads the project page; the rest fill its gallery and the home page. Convert a GIF with:
+  `ffmpeg -i in.gif -vf "fps=24,scale=1280:-2:flags=lanczos,format=yuv420p" -c:v libx264 -crf 26 -movflags +faststart -an out.mp4`
+
+## For search engines and AI assistants
+
+Everything machine-readable is generated from the same content as the pages:
+
+- `/llms.txt` and `/llms-full.txt` ([llmstxt.org](https://llmstxt.org)), plus `/projects/<slug>.md` for each project
+- `/sitemap-index.xml` (HTML pages only, with priorities) and `/changelog/rss.xml`
+- schema.org JSON-LD: Organization, Person, WebSite, SoftwareApplication/SoftwareSourceCode, FAQPage, BreadcrumbList
+- `public/robots.txt` welcomes search and AI crawlers by name
 
 ## Quality gates
 
@@ -25,6 +36,7 @@ pnpm dev          # http://localhost:4321
 | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
 | `pnpm format` / `lint` / `typecheck` | Prettier, ESLint, `astro check`                                                                                      |
 | `pnpm build`                         | Static build into `dist/`                                                                                            |
+| `pnpm check:links`                   | Every internal link and `#fragment` in `dist/` resolves                                                              |
 | `pnpm check:fonts`                   | No third-party font origin in the built HTML or CSS                                                                  |
 | `pnpm cf:check`                      | `wrangler deploy --dry-run`                                                                                          |
 | `pnpm smoke`                         | Serves `dist/` with `wrangler dev` (workerd) and checks the pages, assets, `_headers` and the 404                    |

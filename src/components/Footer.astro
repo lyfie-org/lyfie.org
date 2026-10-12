@@ -2,15 +2,19 @@
 import { getCollection } from "astro:content";
 import Icon from "./Icon.astro";
 import {
+  CREATOR_NAME,
   CREATOR_URL,
   GITHUB_ORG_URL,
+  LUTHOR_URL,
+  PAPYRA_URL,
   SPONSORS_URL,
   X_URL,
   SITE_NAME
 } from "../data/site";
 
 const year = new Date().getFullYear();
-const projects = (await getCollection("projects")).sort(
+// Only projects with a page of their own; teasers live on the home page.
+const projects = (await getCollection("projects", (p) => p.data.page)).sort(
   (a, b) => a.data.order - b.data.order
 );
 
@@ -35,6 +39,8 @@ const columns: { title: string; links: Link[] }[] = [
   {
     title: "Elsewhere",
     links: [
+      { href: LUTHOR_URL, label: "luthor.fyi", external: true },
+      { href: PAPYRA_URL, label: "papyra.app", external: true },
       { href: GITHUB_ORG_URL, label: "GitHub", external: true },
       { href: SPONSORS_URL, label: "GitHub Sponsors", external: true },
       { href: X_URL, label: "X / Twitter", external: true },
@@ -52,11 +58,28 @@ const columns: { title: string; links: Link[] }[] = [
         Free, open-source software — libraries, apps and games — with no paywalls, no
         trackers and no lock-in.
       </p>
+      <p class="site-footer__family">
+        Made with <Icon name="heart" size={13} class="site-footer__heart" /> by{" "}
+        <a href={CREATOR_URL} rel="noopener noreferrer">
+          {CREATOR_NAME}
+        </a>
+        .
+      </p>
       <p class="site-footer__icons">
-        <a href={GITHUB_ORG_URL} rel="noopener noreferrer" aria-label="Lyfie on GitHub">
+        <a
+          href={GITHUB_ORG_URL}
+          rel="noopener noreferrer"
+          aria-label="Lyfie on GitHub"
+          title="Lyfie on GitHub"
+        >
           <Icon name="github" size={18} />
         </a>
-        <a href={SPONSORS_URL} rel="noopener noreferrer" aria-label="Sponsor Lyfie">
+        <a
+          href={SPONSORS_URL}
+          rel="noopener noreferrer"
+          aria-label="Sponsor Lyfie"
+          title="Sponsor Lyfie"
+        >
           <Icon name="heart" size={16} />
         </a>
       </p>
@@ -113,6 +136,27 @@ const columns: { title: string; links: Link[] }[] = [
     line-height: 1.55;
     color: var(--text);
     max-width: 32ch;
+  }
+
+  .site-footer__family {
+    font-size: var(--fs-xs);
+    color: var(--text);
+    margin: 0 0 var(--space-4);
+  }
+
+  .site-footer__family :global(.site-footer__heart) {
+    color: var(--accent-text);
+    fill: currentColor;
+    vertical-align: -2px;
+  }
+
+  .site-footer__family a {
+    color: inherit;
+    text-decoration-color: var(--border-hover);
+  }
+
+  .site-footer__family a:hover {
+    color: var(--accent-text);
   }
 
   .site-footer__icons {

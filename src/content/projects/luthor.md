@@ -10,6 +10,8 @@ docs: https://www.luthor.fyi/docs/getting-started/
 install: npm install @lyfie/luthor react react-dom
 accent: "#0a84ff"
 logo: ../../assets/logos/luthor.png
+cover: ../../assets/shots/luthor-editor.webp
+coverAlt: "The Luthor editor with its formatting toolbar, inserting a heading with a slash command"
 points: [Presets, Headless, Lexical, TypeScript]
 order: 1
 featured: true
@@ -33,5 +35,8 @@ tiers for basic features, UI you cannot change. Luthor is MIT-licensed, built on
 Meta's [Lexical](https://lexical.dev), works with React, Next.js, Astro, Vite and
 Remix, and round-trips Markdown losslessly.
 
-It is also the editor inside [Papyra](/projects/papyra/) — Lyfie builds on its
-own tools.
+## Proven in production
+
+Luthor is the editor inside [Papyra](/projects/papyra/) — its slash commands,
+tables and embeds all run on it. Lyfie builds on its own tools, so the rough
+edges get found and fixed here first.

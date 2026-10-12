@@ -49,6 +49,23 @@
   /* Warm ink wash for the page background. Does not flip in dark mode. */
   --tint-scrim: rgba(61, 44, 30, 0.1);
 
+  /* Neutral emphasis for an edge (a hovered control). Ink, not sakura, so the
+     accent border keeps meaning "selected". Mixed from --text: both themes. */
+  --border-hover: color-mix(in srgb, var(--text) 38%, var(--border));
+  --border-focus: color-mix(in srgb, var(--text) 62%, var(--border));
+
+  /* Warm near-black for deep shadows (product frames). Same as Papyra's. */
+  --scrim: #14100c;
+  --shadow-frame:
+    0 1px 2px color-mix(in srgb, var(--scrim) 8%, transparent),
+    0 30px 70px -28px color-mix(in srgb, var(--scrim) 42%, transparent);
+
+  /* A window's traffic lights in the product frames. Fixed in both themes:
+     they are objects, not surfaces. Decorative only, never carry meaning. */
+  --mac-close: #ff5f57;
+  --mac-min: #febc2e;
+  --mac-max: #28c840;
+
   --shadow-nav: 0 1px 4px rgba(61, 44, 30, 0.06);
   --shadow-card:
     rgba(61, 44, 30, 0.07) 0 2px 8px -1px, rgba(61, 44, 30, 0.04) 0 1px 2px 0px;
@@ -145,6 +162,9 @@
   --shadow-card-hover:
     rgba(0, 0, 0, 0.55) 0 6px 20px -4px, rgba(0, 0, 0, 0.3) 0 2px 6px 0px;
   --shadow: rgba(0, 0, 0, 0.45) 0 4px 14px -2px, rgba(0, 0, 0, 0.28) 0 1px 4px 0px;
+  --shadow-frame:
+    0 1px 2px color-mix(in srgb, var(--scrim) 40%, transparent),
+    0 30px 80px -24px color-mix(in srgb, var(--scrim) 85%, transparent);
 
   color-scheme: dark;
 }

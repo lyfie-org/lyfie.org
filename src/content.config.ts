@@ -14,7 +14,7 @@ const projects = defineCollection({
       /** One sentence for cards and the page lede. */
       tagline: z.string(),
       type: z.enum(["library", "app", "game"]),
-      /** Honest maturity label. "planned" projects have no repo or site yet. */
+      /** Honest maturity label. "planned" = in development: no public repo or site yet. */
       status: z.enum(["stable", "beta", "alpha", "planned"]),
       license: z.string().optional(),
       repo: z.string().url().optional(),
@@ -26,11 +26,16 @@ const projects = defineCollection({
       /** The product's own brand colour — a small dot only, never a fill. */
       accent: z.string().regex(/^#[0-9a-f]{6}$/i),
       logo: image().optional(),
+      /** A screenshot of the product: the page's social card and structured-data image. */
+      cover: image().optional(),
+      coverAlt: z.string().optional(),
       /** Short capability names for the card footer. */
       points: z.array(z.string()).max(4).default([]),
       order: z.number().int(),
       /** Shown on the home page. */
-      featured: z.boolean().default(false)
+      featured: z.boolean().default(false),
+      /** Has its own /projects/<slug>/ page. Off for teasers of unreleased work. */
+      page: z.boolean().default(true)
     })
 });
 

@@ -23,8 +23,10 @@ name: site
 on:
   push:
     branches: [main, development]
+    # Only the README is ignored: projects and changelog entries are Markdown
+    # too, and they must deploy.
     paths-ignore:
-      - "**.md"
+      - "README.md"
       - ".docs/**"
 
 concurrency:
@@ -63,6 +65,10 @@ jobs:
 
       - name: Build the site
         run: pnpm build
+
+      # A dead internal link (or #fragment) fails silently in production.
+      - name: Check internal links
+        run: pnpm check:links
 
       # Fonts are self-hosted and the CSP pins font-src to 'self', so a stray
       # third-party font link would silently break type in production.

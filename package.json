@@ -20,7 +20,8 @@
     "smoke": "node scripts/smoke-test.mjs",
     "check:fonts": "node scripts/check-fonts.mjs",
     "check:layout": "node scripts/check-layout.mjs",
-    "validate": "pnpm format && pnpm lint && pnpm typecheck && pnpm build && pnpm check:fonts && pnpm cf:check && pnpm smoke && pnpm check:layout"
+    "validate": "pnpm format && pnpm lint && pnpm typecheck && pnpm build && pnpm check:links && pnpm check:fonts && pnpm cf:check && pnpm smoke && pnpm check:layout",
+    "check:links": "node scripts/check-links.mjs"
   },
   "engines": {
     "node": ">=22.0.0"

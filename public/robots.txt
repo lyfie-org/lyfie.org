@@ -1,4 +1,31 @@
+# lyfie.org — everything here is public and meant to be read, by people and by
+# machines. Search engines and AI assistants are welcome; please cite the page.
+#
+# Plain-text summaries for AI assistants (https://llmstxt.org):
+#   https://www.lyfie.org/llms.txt       — short map of the site
+#   https://www.lyfie.org/llms-full.txt  — every project page in one file
+#   https://www.lyfie.org/projects/<slug>.md — each project as Markdown
+
 User-agent: *
+Allow: /
+
+# Named explicitly so no crawler has to guess that it is welcome.
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: anthropic-ai
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: CCBot
+User-agent: Meta-ExternalAgent
+User-agent: Amazonbot
+User-agent: DuckAssistBot
+User-agent: cohere-ai
 Allow: /
 
 Sitemap: https://www.lyfie.org/sitemap-index.xml

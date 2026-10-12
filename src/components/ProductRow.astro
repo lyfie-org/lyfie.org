@@ -1,0 +1,189 @@
+---
+// One shipped product on the home page: the pitch on one side, the product on
+// the other (papyra.app's feature-row pattern). Rows alternate sides with
+// `flip`. Facts — name, logo, links, licence — come from the project's content
+// entry, so the row can never describe it differently from its own page.
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import Icon from "./Icon.astro";
+
+interface Props {
+  project: CollectionEntry<"projects">;
+  eyebrow: string;
+  title: string;
+  ticks: string[];
+  flip?: boolean;
+}
+
+const { project, eyebrow, title, ticks, flip = false } = Astro.props;
+const p = project.data;
+const host = p.site ? new URL(p.site).hostname.replace(/^www\./, "") : null;
+---
+
+<article
+  class:list={["row", { "row--flip": flip }]}
+  id={project.id}
+  style={`--project: ${p.accent}`}
+  data-reveal
+>
+  <div class="row__copy">
+    <p class="row__brand">
+      {p.logo && <Image src={p.logo} alt="" width={36} height={36} densities={[1, 2]} />}
+      <span class="row__name">{p.name}</span>
+      <span class="row__meta">
+        <span class="row__dot" aria-hidden="true"></span>
+        {p.type}
+        {p.license && ` · ${p.license}`}
+      </span>
+    </p>
+    <p class="eyebrow">{eyebrow}</p>
+    <h3>{title}</h3>
+    <p class="row__pitch">
+      <slot name="pitch" />
+    </p>
+    <ul class="ticks">
+      {ticks.map((t) => (
+        <li>
+          <Icon name="check" size={16} />
+          {t}
+        </li>
+      ))}
+    </ul>
+    <p class="row__actions">
+      {p.site && (
+        <a class="btn" href={p.site} rel="noopener noreferrer">
+          Visit {host}
+          <Icon name="external" size={14} />
+        </a>
+      )}
+      <a class="btn btn--ghost" href={`/projects/${project.id}/`}>
+        More about {p.name}
+      </a>
+    </p>
+    <p class="row__minor">
+      {p.docs && (
+        <a href={p.docs} rel="noopener noreferrer">
+          <Icon name="book" size={14} /> Docs
+        </a>
+      )}
+      {p.repo && (
+        <a href={p.repo} rel="noopener noreferrer">
+          <Icon name="github" size={14} /> Source
+        </a>
+      )}
+    </p>
+  </div>
+
+  <div class="row__visual">
+    <slot />
+  </div>
+</article>
+
+<style>
+  .row {
+    scroll-margin-top: 90px;
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.25fr);
+    gap: clamp(var(--space-8), 5vw, var(--space-12));
+    align-items: center;
+  }
+
+  .row--flip {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.85fr);
+  }
+
+  .row--flip .row__copy {
+    order: 2;
+  }
+
+  .row__brand {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    margin-bottom: var(--space-5);
+  }
+
+  .row__brand img {
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .row__name {
+    font: 400 var(--fs-xl) / 1 var(--heading);
+    color: var(--text-h);
+  }
+
+  .row__meta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font: 400 var(--fs-xs) / 1.4 var(--mono);
+    color: var(--text);
+  }
+
+  /* The product's own brand colour, as a small dot only. */
+  .row__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--project);
+  }
+
+  .row__copy h3 {
+    font-size: clamp(26px, 2vw + 14px, 38px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-3);
+  }
+
+  .row__pitch {
+    font-size: var(--fs-md);
+    line-height: 1.6;
+    max-width: 40ch;
+    margin-bottom: var(--space-5);
+  }
+
+  .row__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  .row__minor {
+    display: flex;
+    gap: var(--space-5);
+    margin: 0;
+    font-size: var(--fs-sm);
+  }
+
+  .row__minor a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .row__minor a:hover {
+    color: var(--accent-text);
+    text-decoration: underline;
+  }
+
+  .row__visual {
+    min-width: 0;
+  }
+
+  @media (max-width: 56rem) {
+    .row,
+    .row--flip {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .row--flip .row__copy {
+      order: 0;
+    }
+  }
+</style>

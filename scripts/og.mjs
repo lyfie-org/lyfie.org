@@ -85,7 +85,7 @@ const html = `<!doctype html>
 <div class="brand"><img src="${logo}" alt=""><span>lyfie</span></div>
 <div class="rule"></div>
 <h1>Free, open software that outpaces the horizon.</h1>
-<p>Libraries, apps and games — open source, no paywalls, no trackers, no lock-in.</p>
+<p>Luthor, the editor. Papyra, the notes app. Free, open source — no paywalls, no trackers, no lock-in.</p>
 `;
 
 await mkdir(OUT_DIR, { recursive: true });
