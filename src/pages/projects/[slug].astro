@@ -1,13 +1,20 @@
 ---
 import { Image } from "astro:assets";
 import { getCollection, render, type CollectionEntry } from "astro:content";
+import { getImage } from "astro:assets";
+import { SITE_URL } from "../../data/site";
 import Base from "../../layouts/Base.astro";
 import StatusBadge from "../../components/StatusBadge.astro";
 import CodeBlock from "../../components/CodeBlock.astro";
 import Icon from "../../components/Icon.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+import Clip from "../../components/Clip.astro";
+import ClipGallery from "../../components/ClipGallery.astro";
+import { MEDIA } from "../../data/media";
 
 export async function getStaticPaths() {
-  const projects = await getCollection("projects");
+  // Teasers (page: false) have no page; their cards do not link here either.
+  const projects = await getCollection("projects", (p) => p.data.page);
   return projects.map((project) => ({
     params: { slug: project.id },
     props: { project }
@@ -22,20 +29,75 @@ const { project } = Astro.props;
 const p = project.data;
 const { Content } = await render(project);
 
+const [lead, ...clips] = MEDIA[project.id] ?? [];
+
+const siblings = (await getCollection("projects", (s) => s.id !== project.id)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const pageUrl = `${SITE_URL}/projects/${project.id}/`;
+const cover = p.cover
+  ? new URL((await getImage({ src: p.cover, width: 1200, format: "webp" })).src, SITE_URL)
+      .href
+  : undefined;
+const org = { "@id": `${SITE_URL}/#organization` };
+
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": p.type === "library" ? "SoftwareSourceCode" : "SoftwareApplication",
-  name: p.name,
-  description: p.tagline,
-  ...(p.site ? { url: p.site } : {}),
-  ...(p.repo ? { codeRepository: p.repo } : {}),
-  ...(p.license ? { license: p.license } : {}),
-  isAccessibleForFree: true,
-  author: { "@type": "Organization", name: "Lyfie", url: "https://www.lyfie.org" }
+  "@graph": [
+    {
+      "@type": p.type === "library" ? "SoftwareSourceCode" : "SoftwareApplication",
+      "@id": `${pageUrl}#software`,
+      name: p.name,
+      description: p.tagline,
+      url: p.site ?? pageUrl,
+      mainEntityOfPage: pageUrl,
+      ...(cover ? { image: cover, screenshot: cover } : {}),
+      ...(p.repo ? { codeRepository: p.repo } : {}),
+      ...(p.license ? { license: p.license } : {}),
+      ...(p.type === "app"
+        ? {
+            applicationCategory: "ProductivityApplication",
+            operatingSystem: "Linux, macOS, Windows (Docker); any modern browser",
+            offers: { "@type": "Offer", price: "0", priceCurrency: "USD" }
+          }
+        : { programmingLanguage: "TypeScript", runtimePlatform: "React" }),
+      keywords: p.points.join(", "),
+      isAccessibleForFree: true,
+      author: org,
+      publisher: org,
+      sameAs: [p.site, p.repo].filter(Boolean)
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Lyfie", item: `${SITE_URL}/` },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Projects",
+          item: `${SITE_URL}/projects/`
+        },
+        { "@type": "ListItem", position: 3, name: p.name, item: pageUrl }
+      ]
+    }
+  ]
 };
 ---
 
-<Base title={p.name} description={`${p.name}: ${p.tagline}`}>
+<Base
+  title={`${p.name} — ${p.tagline.replace(/\.$/, "")}`}
+  description={`${p.name} is ${p.tagline.charAt(0).toLowerCase()}${p.tagline.slice(1)} Free and open source${p.license ? ` (${p.license})` : ""}, from Lyfie.`}
+  image={p.cover}
+  imageAlt={p.coverAlt}
+>
+  <link
+    slot="head"
+    rel="alternate"
+    type="text/markdown"
+    href={`/projects/${project.id}.md`}
+    title={`${p.name}, as Markdown`}
+  />
   <script
     slot="head"
     type="application/ld+json"
@@ -84,6 +146,18 @@ const jsonLd = {
           </a>
         )}
       </div>
+      {lead && (
+        <div class="lead">
+          <Clip
+            src={lead.src}
+            themed={lead.themed}
+            width={lead.width}
+            height={lead.height}
+            label={lead.label}
+            eager
+          />
+        </div>
+      )}
     </div>
   </section>
 
@@ -121,6 +195,32 @@ const jsonLd = {
       </aside>
     </div>
   </section>
+
+  {clips.length > 0 && (
+    <section class="section section--tint" id="in-action">
+      <div class="wrap">
+        <p class="eyebrow">See it in action</p>
+        <h2>{p.name}, a few seconds at a time.</h2>
+        <div class="in-action">
+          <ClipGallery clips={clips} />
+        </div>
+      </div>
+    </section>
+  )}
+
+  {siblings.length > 0 && (
+    <section class="section more">
+      <div class="wrap">
+        <p class="eyebrow">Also from Lyfie</p>
+        <h2>More, made the same way.</h2>
+        <div class="grid more__grid">
+          {siblings.map((s) => (
+            <ProjectCard project={s} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
 </Base>
 
 <style>
@@ -164,6 +264,19 @@ const jsonLd = {
 
   .body {
     padding-top: 0;
+  }
+
+  .lead {
+    margin-top: clamp(var(--space-8), 5vw, var(--space-12));
+  }
+
+  .in-action {
+    margin-top: var(--space-8);
+  }
+
+  .more__grid {
+    margin-top: var(--space-6);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
   }
 
   .layout {

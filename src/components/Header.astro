@@ -9,9 +9,9 @@ const path = Astro.url.pathname;
 const isCurrent = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
 ---
 
-<header class="site-header">
+<header class="site-header" data-header>
   <div class="wrap site-header__inner">
-    <a class="site-header__brand" href="/">
+    <a class="site-header__brand" href="/" data-brand>
       <Image
         src={logo}
         alt=""
@@ -38,16 +38,67 @@ const isCurrent = (href: string) => (href === "/" ? path === "/" : path.startsWi
         href={GITHUB_ORG_URL}
         rel="noopener noreferrer"
         aria-label="Lyfie on GitHub"
+        title="Lyfie on GitHub"
       >
         <Icon name="github" size={18} />
       </a>
-      <a class="btn site-header__cta" href={SPONSORS_URL} rel="noopener noreferrer">
+      <a
+        class="btn site-header__cta"
+        href={SPONSORS_URL}
+        rel="noopener noreferrer"
+        aria-label="Sponsor Lyfie"
+      >
         <Icon name="heart" size={14} />
-        Sponsor
+        <span class="site-header__cta-label">Sponsor</span>
       </a>
     </div>
   </div>
 </header>
+
+<script>
+  // The logo is "home": from another page it navigates there; on the home page
+  // it glides back to the top (and drops any #section from the URL).
+  document
+    .querySelector<HTMLAnchorElement>("[data-brand]")
+    ?.addEventListener("click", (e) => {
+      if (
+        location.pathname !== "/" ||
+        e.metaKey ||
+        e.ctrlKey ||
+        e.shiftKey ||
+        e.button !== 0
+      )
+        return;
+      e.preventDefault();
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+      if (location.hash) history.replaceState(null, "", "/");
+    });
+
+  // On phones the header is two rows tall. Slide it away while reading down the
+  // page and bring it back the moment you scroll up (CSS does the moving).
+  const header = document.querySelector<HTMLElement>("[data-header]");
+  if (header) {
+    let last = window.scrollY;
+    let ticking = false;
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          const y = window.scrollY;
+          if (Math.abs(y - last) > 6) {
+            header.toggleAttribute("data-tucked", y > last && y > 140);
+            last = y;
+          }
+          ticking = false;
+        });
+      },
+      { passive: true }
+    );
+  }
+</script>
 
 <style>
   .site-header {
@@ -159,9 +210,31 @@ const isCurrent = (href: string) => (href === "/" ? path === "/" : path.startsWi
     }
   }
 
+  /* Phones: the two-row header slides out of the way while reading down and
+     returns on the first scroll up. A transform, so nothing below it reflows.
+     Never while something inside it has focus. */
+  @media (max-width: 56rem) {
+    .site-header {
+      transition: transform var(--dur-slow) var(--ease);
+    }
+
+    .site-header[data-tucked]:not(:focus-within) {
+      transform: translateY(-100%);
+    }
+  }
+
+  /* Smallest phones: the Sponsor button keeps its heart, drops its word. */
   @media (max-width: 30rem) {
     .site-header__cta {
+      padding: var(--space-2) var(--space-3);
+    }
+
+    .site-header__cta-label {
       display: none;
+    }
+
+    .site-header__actions {
+      gap: var(--space-2);
     }
   }
 </style>

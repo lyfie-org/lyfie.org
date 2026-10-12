@@ -4,6 +4,7 @@ import type { CollectionEntry } from "astro:content";
 import StatusBadge from "./StatusBadge.astro";
 import CodeBlock from "./CodeBlock.astro";
 import Icon from "./Icon.astro";
+import { GITHUB_ORG_URL } from "../data/site";
 
 interface Props {
   project: CollectionEntry<"projects">;
@@ -13,7 +14,8 @@ interface Props {
 
 const { project, withInstall = false } = Astro.props;
 const p = project.data;
-const href = `/projects/${project.id}/`;
+// Teasers of unreleased work have no page of their own, so nothing links to one.
+const href = p.page ? `/projects/${project.id}/` : null;
 const firstInstallLine = p.install?.trim().split("\n")[0];
 ---
 
@@ -34,9 +36,7 @@ const firstInstallLine = p.install?.trim().split("\n")[0];
       </span>
     )}
     <div class="project__title">
-      <h3>
-        <a href={href}>{p.name}</a>
-      </h3>
+      <h3>{href ? <a href={href}>{p.name}</a> : p.name}</h3>
       <p class="meta">
         <span class="project__dot" aria-hidden="true"></span>
         {p.type}
@@ -55,9 +55,15 @@ const firstInstallLine = p.install?.trim().split("\n")[0];
   {p.points.length > 0 && <p class="project__points">{p.points.join(" · ")}</p>}
 
   <footer class="project__links">
-    <a href={href}>
-      Details <Icon name="arrow-right" size={14} />
-    </a>
+    {href ? (
+      <a href={href}>
+        Details <Icon name="arrow-right" size={14} />
+      </a>
+    ) : (
+      <a href={GITHUB_ORG_URL} rel="noopener noreferrer">
+        Watch lyfie-org for the release <Icon name="arrow-right" size={14} />
+      </a>
+    )}
     {p.site && (
       <a href={p.site} rel="noopener noreferrer">
         Website

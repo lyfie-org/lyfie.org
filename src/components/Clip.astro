@@ -1,0 +1,202 @@
+---
+// A short looping video of a real product, ported from papyra.app's Clip.
+//
+// Still posters sit underneath (a light and a dark one for themed clips; CSS
+// shows the one matching the page), so there is never a flash of the wrong
+// theme and a reader without JavaScript still sees the product. The video on top
+// has no src in the HTML: the script picks the file for the current theme, plays
+// it only while it is on screen, and swaps it if the theme changes. Nothing
+// downloads for a clip the reader never scrolls to. Reduced motion: no autoplay,
+// but native controls so the reader can still choose to watch.
+interface Props {
+  /** Path without extension, e.g. "/media/papyra/drop" → drop-light.mp4 / drop-dark.mp4. */
+  src: string;
+  /** What happens in the clip, for screen readers. */
+  label: string;
+  /** Recorded in both themes (<src>-light / <src>-dark). Otherwise one file. */
+  themed?: boolean;
+  /** Poster dimensions; also fixes the frame's aspect ratio (no layout shift). */
+  width?: number;
+  height?: number;
+  /** Above the fold: load the poster eagerly. */
+  eager?: boolean;
+  class?: string;
+}
+
+const {
+  src,
+  label,
+  themed = false,
+  width = 1280,
+  height = 720,
+  eager = false,
+  class: className
+} = Astro.props;
+const loading = eager ? "eager" : "lazy";
+---
+
+<figure
+  class:list={["clip", className]}
+  data-clip={src}
+  data-themed={themed ? "" : undefined}
+  style={`--clip-ratio: ${width} / ${height}`}
+>
+  <div class="clip__frame" role="img" aria-label={label}>
+    {themed ? (
+      <>
+        <img
+          class="clip__poster clip__poster--light"
+          src={`${src}-light.webp`}
+          alt=""
+          {width}
+          {height}
+          {loading}
+          decoding="async"
+        />
+        <img
+          class="clip__poster clip__poster--dark"
+          src={`${src}-dark.webp`}
+          alt=""
+          {width}
+          {height}
+          {loading}
+          decoding="async"
+        />
+      </>
+    ) : (
+      <img
+        class="clip__poster"
+        src={`${src}.webp`}
+        alt=""
+        {width}
+        {height}
+        {loading}
+        decoding="async"
+      />
+    )}
+    <video
+      class="clip__video"
+      muted
+      loop
+      playsinline
+      preload="none"
+      aria-hidden="true"
+    ></video>
+  </div>
+</figure>
+
+<script>
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const themeOf = () =>
+    document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+
+  const clips = [...document.querySelectorAll<HTMLElement>("[data-clip]")].map(
+    (figure) => ({
+      figure,
+      video: figure.querySelector("video")!,
+      src: figure.dataset.clip!,
+      themed: figure.hasAttribute("data-themed"),
+      visible: false
+    })
+  );
+
+  type C = (typeof clips)[number];
+  const srcFor = (c: C) => `${c.themed ? `${c.src}-${themeOf()}` : c.src}.mp4`;
+
+  function sync(c: C) {
+    const want = srcFor(c);
+    if (c.visible && !c.video.getAttribute("src")?.endsWith(want)) {
+      c.figure.classList.remove("is-playing");
+      c.video.src = want;
+    }
+    if (c.visible && !reduce.matches) void c.video.play().catch(() => {});
+    else c.video.pause();
+  }
+
+  for (const c of clips) {
+    // Fade the video in only once a frame has actually painted, so the poster
+    // never gives way to an empty box while the first frame decodes.
+    c.video.addEventListener("timeupdate", () => {
+      if (c.video.currentTime > 0.05) c.figure.classList.add("is-playing");
+    });
+    if (reduce.matches) {
+      c.video.controls = true;
+      c.video.removeAttribute("aria-hidden");
+      // Controls inside role="img" would be hidden from assistive tech: move
+      // the label onto the video itself.
+      const frame = c.figure.querySelector<HTMLElement>(".clip__frame")!;
+      c.video.setAttribute("aria-label", frame.getAttribute("aria-label") ?? "");
+      frame.removeAttribute("role");
+      frame.removeAttribute("aria-label");
+      c.video.preload = "metadata";
+      c.video.src = srcFor(c);
+    }
+  }
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        const c = clips.find((x) => x.figure === entry.target);
+        if (!c) continue;
+        c.visible = entry.isIntersecting;
+        sync(c);
+      }
+    },
+    { threshold: 0.35 }
+  );
+  for (const c of clips) io.observe(c.figure);
+
+  new MutationObserver(() => clips.forEach((c) => c.themed && sync(c))).observe(
+    document.documentElement,
+    { attributes: true, attributeFilter: ["data-theme"] }
+  );
+</script>
+
+<style>
+  .clip {
+    margin: 0;
+    min-width: 0;
+  }
+
+  .clip__frame {
+    position: relative;
+    aspect-ratio: var(--clip-ratio);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-frame);
+  }
+
+  .clip__poster,
+  .clip__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .clip__poster--dark {
+    display: none;
+  }
+
+  :global([data-theme="dark"]) .clip__poster--light {
+    display: none;
+  }
+
+  :global([data-theme="dark"]) .clip__poster--dark {
+    display: block;
+  }
+
+  .clip__video {
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease);
+  }
+
+  .clip.is-playing .clip__video,
+  .clip__video[controls] {
+    opacity: 1;
+  }
+</style>

@@ -1,18 +1,29 @@
 ---
-import { Image } from "astro:assets";
-import { getCollection } from "astro:content";
+import { Image, getImage } from "astro:assets";
+import { getCollection, getEntry } from "astro:content";
 import Base from "../layouts/Base.astro";
 import Icon from "../components/Icon.astro";
-import ProjectCard from "../components/ProjectCard.astro";
 import FallingFlora from "../components/FallingFlora.astro";
 import ChangelogList from "../components/ChangelogList.astro";
+import ProductRow from "../components/ProductRow.astro";
+import Frame from "../components/Frame.astro";
+import CodeBlock from "../components/CodeBlock.astro";
+import Clip from "../components/Clip.astro";
+import ClipGallery from "../components/ClipGallery.astro";
+import { MEDIA } from "../data/media";
+import StatusBadge from "../components/StatusBadge.astro";
 import logo from "../assets/logos/lyfie.png";
+import papyraLight from "../assets/shots/papyra-desk-light.png";
+import papyraDark from "../assets/shots/papyra-desk-dark.png";
+import { FAQ, homeGraph } from "../data/about";
 import {
+  CREATOR_GITHUB_URL,
   CREATOR_NAME,
   CREATOR_URL,
   DESCRIPTION,
   GITHUB_ORG_URL,
   GOOD_FIRST_ISSUES_URL,
+  SITE_URL,
   SPONSORS_URL,
   TAGLINE
 } from "../data/site";
@@ -20,34 +31,80 @@ import {
 const projects = (await getCollection("projects")).sort(
   (a, b) => a.data.order - b.data.order
 );
-const featured = projects.filter((p) => p.data.featured);
-const licenses = [...new Set(projects.map((p) => p.data.license).filter(Boolean))];
+const shipped = projects.filter((p) => p.data.status === "stable");
+const upcoming = projects.filter((p) => p.data.featured && p.data.status === "planned");
+const licenses = [...new Set(shipped.map((p) => p.data.license).filter(Boolean))];
 
-const values = [
+const luthor = (await getEntry("projects", "luthor"))!;
+const papyra = (await getEntry("projects", "papyra"))!;
+
+const covers: Record<string, string> = {};
+for (const p of projects) {
+  if (!p.data.cover) continue;
+  const img = await getImage({ src: p.data.cover, width: 1200, format: "webp" });
+  covers[p.id] = new URL(img.src, SITE_URL).href;
+}
+const jsonLd = homeGraph(projects, covers);
+
+const COUNT = ["None", "One", "Two", "Three", "Four", "Five"];
+const shippedWord = COUNT[shipped.length] ?? String(shipped.length);
+
+const facts = [
+  { icon: "box", text: `${shippedWord} finished products` },
+  { icon: "file", text: `${licenses.join(" & ")} licensed` },
+  { icon: "shield", text: "No trackers, ever" },
+  { icon: "server", text: "Runs on your hardware" }
+] as const;
+
+const promises = [
   {
+    icon: "heart",
     title: "No paywalls",
     body: "Every feature ships to everyone. No pro tier, no seat pricing, no “contact sales”. Free is the product, not the trial."
   },
   {
+    icon: "server",
     title: "Your data, your hardware",
     body: "Plain files, open formats, self-hosting first. If Lyfie disappeared tomorrow, nothing you made with our software would go with it."
   },
   {
+    icon: "star",
     title: "Free doesn’t mean dull",
     body: "Open source has earned a reputation for being grey and fiddly. We sweat the design, the defaults and the docs as much as the code."
   }
-];
+] as const;
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Lyfie",
-  url: "https://www.lyfie.org",
-  logo: "https://www.lyfie.org/android-chrome-512x512.png",
-  description: DESCRIPTION,
-  sameAs: [GITHUB_ORG_URL, "https://x.com/lyfieapp"],
-  founder: { "@type": "Person", name: CREATOR_NAME, url: CREATOR_URL }
-};
+const helps = [
+  {
+    icon: "github",
+    title: "Pick up a good first issue",
+    text: "Small, well-scoped tasks across every repo.",
+    href: GOOD_FIRST_ISSUES_URL
+  },
+  {
+    icon: "heart",
+    title: "Sponsor the work",
+    text: "Keeps the software free for everyone else.",
+    href: SPONSORS_URL
+  },
+  {
+    icon: "bug",
+    title: "Report a bug or an idea",
+    text: "Star a repo, file an issue, share a project.",
+    href: "/contribute/"
+  }
+] as const;
+
+const clip = (project: string, src: string) =>
+  MEDIA[project]!.find((c) => c.src.endsWith(`/${src}`))!;
+const heroPapyra = clip("papyra", "drop");
+const heroLuthor = clip("luthor", "slash");
+const rowLuthor = clip("luthor", "embeds");
+const galleryPapyra = MEDIA.papyra!.filter((c) => c !== heroPapyra);
+const galleryLuthor = MEDIA.luthor!.filter((c) => c !== heroLuthor && c !== rowLuthor);
+
+// From Luthor's README quick start.
+const luthorInstall = "npm install @lyfie/luthor react react-dom";
 ---
 
 <Base title={`Lyfie — ${TAGLINE}`} description={DESCRIPTION} bareTitle>
@@ -57,6 +114,7 @@ const jsonLd = {
     is:inline
     set:html={JSON.stringify(jsonLd)}
   />
+  <!-- ------------------------------------------------------------ hero -->
   <section class="hero">
     <FallingFlora />
     <div class="wrap hero__inner">
@@ -69,68 +127,254 @@ const jsonLd = {
         densities={[1, 2]}
         loading="eager"
       />
+      <p class="chip hero__chip">
+        <span class="chip__dot"></span>
+        Free and open source · No trackers
+      </p>
       <h1>Lyfie</h1>
       <p class="hero__tagline">{TAGLINE}</p>
       <p class="hero__lede">
-        We build open-source libraries, apps and games — and give every one of them away.
-        No subscriptions, no data harvesting, no lock-in. Just well-made software you can
-        read, run and keep.
+        We make software you can read, run and keep — a rich-text editor for developers
+        and a notes app for everyone. No subscriptions, no data harvesting, no lock-in.
       </p>
       <div class="hero__actions">
-        <a class="btn" href="/projects/">
-          Explore projects
+        <a class="btn btn--lg" href="#products">
+          See what we make
           <Icon name="arrow-right" size={16} />
         </a>
-        <a class="btn btn--ghost" href={GITHUB_ORG_URL} rel="noopener noreferrer">
+        <a class="btn btn--ghost btn--lg" href={GITHUB_ORG_URL} rel="noopener noreferrer">
           <Icon name="github" size={16} />
           lyfie-org on GitHub
         </a>
       </div>
       <p class="hero__note">
-        {licenses.join(" & ")} licensed · No paywalls · No trackers
-      </p>
-    </div>
-  </section>
-
-  <section class="section" id="projects">
-    <div class="wrap">
-      <p class="eyebrow">What we build</p>
-      <h2>Small tools, made properly</h2>
-      <p class="lede section__lede">
-        Each project stands on its own, with its own site and docs. Every one is labelled
-        honestly — stable means stable.
-      </p>
-
-      <div class="grid projects">
-        {featured.map((project) => (
-          <ProjectCard project={project} withInstall />
-        ))}
-      </div>
-
-      <p class="projects__more">
-        <a href="/projects/">
-          See all projects <Icon name="arrow-right" size={14} />
+        Built in the open by{" "}
+        <a href={CREATOR_URL} rel="noopener noreferrer">
+          {CREATOR_NAME}
         </a>
       </p>
+
+      {/* The two products, moving: a glimpse before a word of explanation. */}
+      <div class="hero__stage">
+        <Clip
+          class="hero__clip hero__clip--back"
+          src={heroLuthor.src}
+          width={heroLuthor.width}
+          height={heroLuthor.height}
+          label={heroLuthor.label}
+          eager
+        />
+        <Clip
+          class="hero__clip hero__clip--front"
+          src={heroPapyra.src}
+          themed={heroPapyra.themed}
+          width={heroPapyra.width}
+          height={heroPapyra.height}
+          label={heroPapyra.label}
+          eager
+        />
+        <p class="hero__tag hero__tag--luthor" aria-hidden="true">
+          Luthor
+        </p>
+        <p class="hero__tag hero__tag--papyra" aria-hidden="true">
+          Papyra
+        </p>
+      </div>
     </div>
   </section>
 
-  <section class="section values">
-    <div class="wrap">
-      <p class="eyebrow">Why open source</p>
-      <h2>Three promises, in every repo</h2>
-      <ol class="values__list">
-        {values.map((v, i) => (
-          <li class="values__item">
-            <span class="values__num">{i + 1}</span>
-            <div>
-              <h3>{v.title}</h3>
-              <p>{v.body}</p>
+  <!-- ----------------------------------------------------------- facts -->
+  <section class="facts" aria-label="At a glance">
+    <ul class="wrap facts__list">
+      {facts.map((f) => (
+        <li>
+          <Icon name={f.icon} size={18} />
+          {f.text}
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- -------------------------------------------------------- products -->
+  <section class="section" id="products">
+    <div class="wrap wrap--wide">
+      <header class="intro" data-reveal>
+        <p class="eyebrow">Shipped</p>
+        <h2>
+          Two finished tools.
+          <br />
+          Both free.
+        </h2>
+        <p class="lede">
+          Each has its own site and docs. One is the editor; the other is built on it.
+        </p>
+      </header>
+
+      <div class="rows">
+        <ProductRow
+          project={luthor}
+          eyebrow="For developers"
+          title="An editor you can ship today — and own forever."
+          ticks={[
+            "Polished presets that work on day one",
+            "A headless, typed runtime for full control",
+            "Markdown in, Markdown out — losslessly",
+            "React, Next.js, Astro, Vite and Remix"
+          ]}
+        >
+          <Fragment slot="pitch">
+            A TypeScript-first rich-text editor for React, built on Meta’s Lexical. Start
+            with a preset, go headless when you need every pixel. MIT, no paid tier.
+          </Fragment>
+          <Clip
+            src={rowLuthor.src}
+            width={rowLuthor.width}
+            height={rowLuthor.height}
+            label={rowLuthor.label}
+          />
+          <div class="row__install">
+            <CodeBlock code={luthorInstall} label="Terminal" lang="bash" />
+          </div>
+        </ProductRow>
+
+        <ProductRow
+          project={papyra}
+          flip
+          eyebrow="For everyone"
+          title="A calm home for your notes, on your own server."
+          ticks={[
+            "Every note is a plain Markdown file",
+            "No telemetry, analytics or crash reports",
+            "Live collaboration, comments and locked notes",
+            "One Docker container — a NAS, a Pi or a VPS"
+          ]}
+        >
+          <Fragment slot="pitch">
+            As easy as sticky notes, as deep as a wiki. Bring your Google Keep or Obsidian
+            notes and they stay yours. Its editor is <a href="#luthor">Luthor</a>.
+          </Fragment>
+          <Frame title="papyra.app">
+            <Image
+              class="shot--light"
+              src={papyraLight}
+              alt="The Papyra desk: colourful note cards in a grid, with a sidebar of collections"
+              widths={[640, 960, 1280]}
+              sizes="(max-width: 56rem) 100vw, 640px"
+            />
+            <Image
+              class="shot--dark"
+              src={papyraDark}
+              alt="The Papyra desk in dark mode: colourful note cards in a grid, with a sidebar of collections"
+              widths={[640, 960, 1280]}
+              sizes="(max-width: 56rem) 100vw, 640px"
+            />
+          </Frame>
+        </ProductRow>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------------------------------------------------------- gallery -->
+  <section class="section section--tint" id="see-it">
+    <div class="wrap wrap--wide">
+      <header class="intro" data-reveal>
+        <p class="eyebrow">See them at work</p>
+        <h2>
+          Simple to use.
+          <br />
+          Lovely to look at.
+        </h2>
+        <p class="lede">No manual needed. A few seconds of each, exactly as they run.</p>
+      </header>
+
+      <div class="showcase">
+        <header class="showcase__head" data-reveal>
+          <h3>
+            Papyra <span>· for your notes</span>
+          </h3>
+          <a href={papyra.data.site} rel="noopener noreferrer">
+            Try it at papyra.app <Icon name="external" size={14} />
+          </a>
+        </header>
+        <ClipGallery clips={galleryPapyra} />
+      </div>
+
+      <div class="showcase">
+        <header class="showcase__head" data-reveal>
+          <h3>
+            Luthor <span>· for the apps you build</span>
+          </h3>
+          <a href={luthor.data.site} rel="noopener noreferrer">
+            Play with it at luthor.fyi <Icon name="external" size={14} />
+          </a>
+        </header>
+        <ClipGallery clips={galleryLuthor} />
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------ coming next -->
+  {upcoming.length > 0 && (
+    <section class="section" id="next">
+      <div class="wrap wrap--narrow">
+        <header class="intro" data-reveal>
+          <p class="eyebrow">In development</p>
+          <h2>What’s next.</h2>
+        </header>
+        {upcoming.map(({ data: p }) => (
+          <article class="card next" style={`--project: ${p.accent}`} data-reveal>
+            <div class="next__head">
+              <span class="next__icon" aria-hidden="true">
+                <Icon name="wallet" size={22} />
+              </span>
+              <div>
+                <h3 class="next__name">
+                  <span class="next__dot" aria-hidden="true"></span>
+                  {p.name}
+                </h3>
+                <p class="meta">
+                  {p.type} · {p.points.join(" · ")}
+                </p>
+              </div>
+              <StatusBadge status={p.status} />
             </div>
+            <p class="next__tagline">{p.tagline}</p>
+            <p>
+              Personal finance without handing your bank history to anyone. Like
+              everything Lyfie makes, it will run on your own machine, keep your data
+              there, and be free. Not public yet — it ships when it is ready, not before.
+            </p>
+            <p class="next__actions">
+              <a class="btn btn--ghost" href={GITHUB_ORG_URL} rel="noopener noreferrer">
+                <Icon name="github" size={16} />
+                Watch on GitHub
+              </a>
+            </p>
+          </article>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- --------------------------------------------------------- promises -->
+  <section class="section">
+    <div class="wrap">
+      <header class="intro" data-reveal>
+        <p class="eyebrow">Why open source</p>
+        <h2>Three promises, in every repo.</h2>
+      </header>
+      <ol class="promises">
+        {promises.map((v, i) => (
+          <li class="promises__item" data-reveal style={`--reveal-delay:${i * 80}ms`}>
+            <span class="promises__icon" aria-hidden="true">
+              <Icon name={v.icon} size={20} />
+            </span>
+            <h3>{v.title}</h3>
+            <p>{v.body}</p>
           </li>
         ))}
       </ol>
-      <p>
+      <p class="promises__more" data-reveal>
         <a class="btn btn--ghost" href="/manifesto/">
           Read the manifesto
           <Icon name="arrow-right" size={16} />
@@ -139,11 +383,12 @@ const jsonLd = {
     </div>
   </section>
 
-  <section class="section">
+  <!-- -------------------------------------------------------- changelog -->
+  <section class="section section--tint">
     <div class="wrap split split--top">
-      <div>
+      <div data-reveal>
         <p class="eyebrow">Built in public</p>
-        <h2>Shipping, out loud</h2>
+        <h2>Shipping, out loud.</h2>
         <p>
           Every release, fix and experiment happens in the open on GitHub. Here is what
           landed most recently.
@@ -154,73 +399,141 @@ const jsonLd = {
           </a>
         </p>
       </div>
-      <ChangelogList limit={4} />
+      <div data-reveal style="--reveal-delay:120ms">
+        <ChangelogList limit={4} />
+      </div>
     </div>
   </section>
 
-  <section class="section">
-    <div class="wrap split split--top">
-      <div>
-        <p class="eyebrow">Help us build</p>
-        <h2>Build the future with like-minded folks</h2>
+  <!-- ------------------------------------------------------------ maker -->
+  <section class="section" id="maker">
+    <div class="wrap split">
+      <div data-reveal>
+        <a class="maker__mark" href={CREATOR_URL} rel="noopener noreferrer" tabindex="-1">
+          <picture>
+            <source
+              srcset="/media/maker/rna-still.webp"
+              media="(prefers-reduced-motion: reduce)"
+            />
+            <img
+              src="/media/maker/rna.webp"
+              alt={`${CREATOR_NAME}’s mark`}
+              width="96"
+              height="96"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+        </a>
+        <p class="eyebrow">Who’s behind it</p>
+        <h2>
+          Made by one person.
+          <br />
+          Open to everyone.
+        </h2>
         <p>
-          Lyfie is led by{" "}
-          <a href={CREATOR_URL} rel="noopener noreferrer">
-            {CREATOR_NAME}
+          Lyfie was started by {CREATOR_NAME}, an engineer who values privacy and builds
+          software that respects it. One person keeps the direction coherent; anyone can
+          shape it with an issue, an idea or a pull request.
+        </p>
+        <p>
+          It is a small operation, and honest about it: projects say how mature they are,
+          and whatever happens, the code stays yours to read, fork and keep.
+        </p>
+      </div>
+      <ul class="helps" data-reveal style="--reveal-delay:120ms">
+        <li>
+          <a class="helps__item" href={CREATOR_URL} rel="noopener noreferrer">
+            <span class="helps__icon">
+              <Icon name="user" size={18} />
+            </span>
+            <span>
+              <strong>rahulnsanand.com</strong>
+              <span class="helps__text">{CREATOR_NAME}’s own site.</span>
+            </span>
+            <Icon name="arrow-right" size={16} class="helps__arrow" />
           </a>
-          , but it is not a one-person show — and it should not be. Fix a bug, write a
-          doc, design a screen, or tell us what hurts.
-        </p>
-      </div>
-      <div class="help__actions">
-        <a
-          class="card help__action"
-          href={GOOD_FIRST_ISSUES_URL}
-          rel="noopener noreferrer"
-        >
-          <span class="card__icon">
-            <Icon name="github" size={20} />
-          </span>
-          <h3>Pick up a good first issue</h3>
-          <p>Small, well-scoped tasks across every repo, tagged for newcomers.</p>
-        </a>
-        <a class="card help__action" href={SPONSORS_URL} rel="noopener noreferrer">
-          <span class="card__icon">
-            <Icon name="heart" size={20} />
-          </span>
-          <h3>Sponsor the work</h3>
-          <p>Keeps the software free for everyone else. Every contribution helps.</p>
-        </a>
-        <a class="card help__action" href="/contribute/">
-          <span class="card__icon">
-            <Icon name="star" size={20} />
-          </span>
-          <h3>Other ways to help</h3>
-          <p>Star a repo, report a bug, share a project with someone who needs it.</p>
-        </a>
-      </div>
+        </li>
+        <li>
+          <a class="helps__item" href={CREATOR_GITHUB_URL} rel="noopener noreferrer">
+            <span class="helps__icon">
+              <Icon name="github" size={18} />
+            </span>
+            <span>
+              <strong>@rahulnsanand</strong>
+              <span class="helps__text">On GitHub.</span>
+            </span>
+            <Icon name="arrow-right" size={16} class="helps__arrow" />
+          </a>
+        </li>
+      </ul>
     </div>
   </section>
 
-  <section class="section">
+  <!-- ------------------------------------------------------------- help -->
+  <section class="section section--tint" id="help">
+    <div class="wrap split">
+      <div data-reveal>
+        <p class="eyebrow">Help us build</p>
+        <h2>Build the future with like-minded folks.</h2>
+        <p>
+          Fix a bug, write a doc, design a screen, or tell us what hurts. Every bug
+          report, idea and pull request counts.
+        </p>
+        <p>
+          <a class="btn" href="/contribute/">
+            How to contribute
+            <Icon name="arrow-right" size={16} />
+          </a>
+        </p>
+      </div>
+      <ul class="helps">
+        {helps.map((h, i) => (
+          <li data-reveal style={`--reveal-delay:${i * 80}ms`}>
+            <a
+              class="helps__item"
+              href={h.href}
+              rel={h.href.startsWith("http") ? "noopener noreferrer" : undefined}
+            >
+              <span class="helps__icon">
+                <Icon name={h.icon} size={18} />
+              </span>
+              <span>
+                <strong>{h.title}</strong>
+                <span class="helps__text">{h.text}</span>
+              </span>
+              <Icon name="arrow-right" size={16} class="helps__arrow" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- -------------------------------------------------------------- faq -->
+  <section class="section" id="faq">
     <div class="wrap wrap--narrow">
-      <aside class="callout">
-        <h2>Honestly: we are a small team</h2>
-        <p>
-          Some of these projects are young, and they say so on the label. We would rather
-          ship real software carefully and tell you where the rough edges are than promise
-          polish we have not earned yet.
-        </p>
-        <p>
-          The one thing that will not change: it is all open source. Whatever happens, the
-          code stays yours to read, fork and keep.
-        </p>
-      </aside>
+      <header class="intro" data-reveal>
+        <p class="eyebrow">Questions</p>
+        <h2>Good to know.</h2>
+      </header>
+      <div class="faq" data-reveal>
+        {FAQ.map((item, i) => (
+          <details class="faq__item" open={i === 0}>
+            <summary>
+              <h3>{item.q}</h3>
+              <Icon name="arrow-right" size={16} class="faq__chev" />
+            </summary>
+            <p>{item.a}</p>
+          </details>
+        ))}
+      </div>
     </div>
   </section>
 </Base>
 
 <style>
+  /* ------------------------------------------------------------ hero */
   .hero {
     position: relative;
     isolation: isolate;
@@ -240,7 +553,11 @@ const jsonLd = {
     border-radius: var(--radius-lg);
     margin-bottom: var(--space-5);
     height: auto;
-    filter: drop-shadow(0 10px 22px rgba(61, 44, 30, 0.14));
+    filter: drop-shadow(0 10px 22px color-mix(in srgb, var(--scrim) 14%, transparent));
+  }
+
+  .hero__chip {
+    margin-bottom: var(--space-5);
   }
 
   .hero h1 {
@@ -259,7 +576,7 @@ const jsonLd = {
     font-size: var(--fs-md);
     line-height: 1.6;
     color: var(--text);
-    max-width: 56ch;
+    max-width: 52ch;
     margin-bottom: var(--space-8);
   }
 
@@ -271,67 +588,304 @@ const jsonLd = {
   }
 
   .hero__note {
-    margin: var(--space-4) 0 0;
+    margin: var(--space-5) 0 0;
     font-size: var(--fs-xs);
     color: var(--text);
   }
 
-  .projects {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  .hero__note a {
+    color: inherit;
+    text-decoration-color: var(--border-hover);
   }
 
-  .projects__more {
-    margin: var(--space-6) 0 0;
+  .hero__note a:hover {
+    color: var(--accent-text);
   }
 
-  .values__list {
+  /* ----------------------------------------------------------- facts */
+  .facts {
+    border-block: 1px solid var(--border);
+    background: color-mix(in srgb, var(--surface) 55%, transparent);
+  }
+
+  .facts__list {
     list-style: none;
-    margin: var(--space-8) 0 var(--space-8);
+    margin-block: 0;
+    padding-block: var(--space-5);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: var(--space-4) var(--space-8);
+  }
+
+  .facts__list li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    color: var(--text-h);
+  }
+
+  .facts__list :global(svg) {
+    flex: none;
+    color: var(--accent-text);
+  }
+
+  /* -------------------------------------------------------- products */
+  .rows {
+    display: grid;
+    gap: clamp(var(--space-12), 9vw, 8rem);
+  }
+
+  .row__install {
+    margin-top: var(--space-4);
+  }
+
+  /* ------------------------------------------------------- hero stage */
+  .hero__stage {
+    position: relative;
+    width: min(100%, 60rem);
+    margin-top: clamp(var(--space-10), 6vw, var(--space-12));
+    padding-bottom: 7%;
+  }
+
+  .hero__stage :global(.hero__clip--front) {
+    position: relative;
+    z-index: 2;
+    width: 74%;
+  }
+
+  .hero__stage :global(.hero__clip--back) {
+    position: absolute;
+    z-index: 1;
+    right: 0;
+    bottom: 0;
+    width: 52%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__stage :global(.hero__clip--back) {
+      animation: float 9s var(--ease-inout) infinite alternate;
+    }
+  }
+
+  @keyframes float {
+    to {
+      transform: translateY(-10px);
+    }
+  }
+
+  .hero__tag {
+    position: absolute;
+    z-index: 3;
+    margin: 0;
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    backdrop-filter: blur(8px);
+    box-shadow: var(--shadow-card);
+    font: 400 var(--fs-md) / 1.4 var(--heading);
+    color: var(--text-h);
+  }
+
+  /* Name tags sit on the frames' edges, never over the product itself. */
+  .hero__tag--papyra {
+    left: var(--space-6);
+    top: 0;
+    transform: translateY(calc(-100% - var(--space-2)));
+  }
+
+  .hero__tag--luthor {
+    right: var(--space-6);
+    bottom: 0;
+    transform: translateY(50%);
+  }
+
+  @media (max-width: 40rem) {
+    .hero__stage :global(.hero__clip--front) {
+      width: 100%;
+    }
+
+    .hero__stage :global(.hero__clip--back) {
+      position: relative;
+      width: 82%;
+      margin: calc(-1 * var(--space-8)) 0 0 auto;
+    }
+
+    /* Stacked: Papyra on top (its tag above it), Luthor tucked beneath. */
+    .hero__stage {
+      display: flex;
+      flex-direction: column;
+      padding-bottom: var(--space-4);
+    }
+
+    .hero__stage :global(.hero__clip--front) {
+      order: 1;
+    }
+
+    .hero__stage :global(.hero__clip--back) {
+      order: 2;
+    }
+  }
+
+  /* ------------------------------------------------------------ maker */
+  .maker__mark {
+    display: inline-block;
+    margin-bottom: var(--space-5);
+    border-radius: 50%;
+    box-shadow: var(--shadow-card);
+  }
+
+  .maker__mark img {
+    display: block;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+  }
+
+  /* ---------------------------------------------------------- gallery */
+  .showcase + .showcase {
+    margin-top: clamp(var(--space-12), 8vw, 7rem);
+  }
+
+  .showcase__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-6);
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .showcase__head h3 {
+    margin: 0;
+    font-size: clamp(24px, 1.6vw + 14px, 32px);
+  }
+
+  .showcase__head h3 span {
+    color: var(--text);
+  }
+
+  .showcase__head a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+  }
+
+  /* ----------------------------------------------------- coming next */
+  .next {
+    gap: var(--space-4);
+    padding: var(--space-6);
+  }
+
+  .next__head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-4);
+    align-items: center;
+  }
+
+  .next__icon {
+    display: inline-grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background: var(--accent-bg);
+    color: var(--accent-text);
+  }
+
+  .next__name {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    font-size: var(--fs-xl);
+  }
+
+  /* Rokada's own colour, as a dot only: Lyfie's palette owns the page. */
+  .next__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--project);
+  }
+
+  .next .meta {
+    margin: var(--space-1) 0 0;
+  }
+
+  .next__tagline {
+    font: 400 var(--fs-lg) / 1.35 var(--heading);
+    color: var(--text-h);
+  }
+
+  .next__actions {
+    margin-top: var(--space-2);
+  }
+
+  @media (max-width: 30rem) {
+    .next__head {
+      grid-template-columns: auto 1fr;
+    }
+
+    .next__head :global(.badge) {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+  }
+
+  /* -------------------------------------------------------- promises */
+  .promises {
+    list-style: none;
+    margin: 0 0 var(--space-8);
     padding: 0;
     display: grid;
     gap: var(--space-5);
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
   }
 
-  .values__item {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: var(--space-4);
-    padding-top: var(--space-5);
-    border-top: 1px solid var(--border);
+  .promises__item {
+    padding: var(--space-6);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
   }
 
-  .values__num {
-    min-width: 1ch;
-    font: 400 var(--fs-2xl) / 1 var(--heading);
+  .promises__icon {
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    margin-bottom: var(--space-4);
+    border-radius: var(--radius-sm);
+    background: var(--accent-bg);
     color: var(--accent-text);
   }
 
-  .values__item p {
+  .promises__item p {
     margin: 0;
     font-size: var(--fs-sm);
     line-height: 1.6;
   }
 
-  .help__actions {
-    display: grid;
-    gap: var(--space-3);
-  }
-
-  .help__action h3 {
+  .promises__more {
+    text-align: center;
     margin: 0;
-    font-size: var(--fs-md);
   }
 
-  .help__action {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    column-gap: var(--space-4);
-    row-gap: var(--space-1);
-  }
-
-  .help__action .card__icon {
-    grid-row: span 2;
-    margin: 2px 0 0;
+  @media (max-width: 40rem) {
+    .facts__list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      justify-content: start;
+    }
   }
 </style>

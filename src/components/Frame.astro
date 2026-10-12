@@ -1,0 +1,92 @@
+---
+// A desktop window around a product visual: traffic lights and an address (or
+// file name) in the title bar. The chrome is decoration; whatever is slotted in
+// carries its own alt text.
+interface Props {
+  /** Shown in the title bar, e.g. "papyra.app" or "App.tsx". */
+  title: string;
+  /** Monospace title for code, sans for an address. */
+  mono?: boolean;
+}
+
+const { title, mono = false } = Astro.props;
+---
+
+<figure class="frame">
+  <div class="frame__bar" aria-hidden="true">
+    <span class="frame__lights">
+      <i></i>
+      <i></i>
+      <i></i>
+    </span>
+    <span class:list={["frame__title", { "frame__title--mono": mono }]}>{title}</span>
+  </div>
+  <div class="frame__body">
+    <slot />
+  </div>
+</figure>
+
+<style>
+  .frame {
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-frame);
+    overflow: hidden;
+  }
+
+  .frame__bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding-inline: var(--space-4);
+    border-bottom: 1px solid var(--border);
+    background: var(--code-bg);
+  }
+
+  .frame__lights {
+    position: absolute;
+    left: var(--space-4);
+    display: flex;
+    gap: 6px;
+  }
+
+  .frame__lights i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--mac-close);
+  }
+
+  .frame__lights i:nth-child(2) {
+    background: var(--mac-min);
+  }
+
+  .frame__lights i:nth-child(3) {
+    background: var(--mac-max);
+  }
+
+  .frame__title {
+    font: 500 var(--fs-xs) / 1 var(--sans);
+    color: var(--text);
+  }
+
+  .frame__title--mono {
+    font-family: var(--mono);
+  }
+
+  .frame__body :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* A light and a dark take of the same screen: show the one matching the theme. */
+  :global([data-theme="dark"]) .frame__body :global(.shot--light),
+  :global(:root:not([data-theme="dark"])) .frame__body :global(.shot--dark) {
+    display: none;
+  }
+</style>

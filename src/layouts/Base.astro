@@ -2,6 +2,9 @@
 import "../styles/site.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import ScrollTop from "../components/ScrollTop.astro";
+import { getImage } from "astro:assets";
+import type { ImageMetadata } from "astro";
 import { SITE_NAME, TAGLINE } from "../data/site";
 
 interface Props {
@@ -9,23 +12,71 @@ interface Props {
   description: string;
   /** Omit the site-name suffix — used by the home page, whose title is already whole. */
   bareTitle?: boolean;
+  /** Keep the page out of search results (the 404). */
+  noindex?: boolean;
+  /** og:type — "article" for long-form pages. */
+  ogType?: "website" | "article";
+  /** Social card for this page, cropped to 1200×630. Defaults to the site card. */
+  image?: ImageMetadata;
+  /** What the social card shows, for screen readers on social sites. */
+  imageAlt?: string;
 }
 
-const { title, description, bareTitle = false } = Astro.props;
+const {
+  title,
+  description,
+  bareTitle = false,
+  noindex = false,
+  ogType = "website",
+  image,
+  imageAlt = `${SITE_NAME} — ${TAGLINE}`
+} = Astro.props;
 const fullTitle = bareTitle ? title : `${title} — ${SITE_NAME}`;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
-const ogImage = new URL("/og.png", Astro.site).href;
+const card = image
+  ? await getImage({ src: image, width: 1200, height: 630, fit: "cover", format: "png" })
+  : null;
+const ogImage = new URL(card?.src ?? "/og.png", Astro.site).href;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta
+      name="robots"
+      content={
+        noindex
+          ? "noindex, follow"
+          : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      }
+    />
+    <meta name="author" content="Lyfie" />
+    {/* Plain-text summary for AI assistants and crawlers (llmstxt.org). */}
+    <link
+      rel="alternate"
+      type="text/plain"
+      href="/llms.txt"
+      title="Lyfie, summarised for AI assistants"
+    />
+    <link
+      rel="alternate"
+      type="text/plain"
+      href="/llms-full.txt"
+      title="Every Lyfie project page as plain text"
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      href="/changelog/rss.xml"
+      title="Lyfie changelog"
+    />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -34,7 +85,8 @@ const ogImage = new URL("/og.png", Astro.site).href;
     <meta name="theme-color" content="#f2ebe0" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1c1917" media="(prefers-color-scheme: dark)" />
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content="en_GB" />
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
@@ -42,10 +94,13 @@ const ogImage = new URL("/og.png", Astro.site).href;
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={`${SITE_NAME} — ${TAGLINE}`} />
+    <meta property="og:image:alt" content={imageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lyfieapp" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={imageAlt} />
 
     {/* Only the two faces above the fold are preloaded. Self-hosted: no third-party origin. */}
     <link
@@ -77,6 +132,8 @@ const ogImage = new URL("/og.png", Astro.site).href;
               ? "dark"
               : "light";
         document.documentElement.setAttribute("data-theme", theme);
+        // Gates the scroll-reveal styles: without JS nothing is ever hidden.
+        document.documentElement.classList.add("js");
       })();
     </script>
     <slot name="head" />
@@ -90,5 +147,27 @@ const ogImage = new URL("/og.png", Astro.site).href;
       <slot />
     </main>
     <Footer />
+    <ScrollTop />
+    <script>
+      // Reveal [data-reveal] blocks as they scroll in (see site.css).
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            e.target.classList.add("is-in");
+            io.unobserve(e.target);
+          }
+        },
+        { rootMargin: "0px 0px -8% 0px", threshold: 0.12 }
+      );
+      document.querySelectorAll("[data-reveal]").forEach((el) => io.observe(el));
+
+      // Anything that leaves lyfie.org opens in a new tab; this site stays in this one.
+      document.querySelectorAll<HTMLAnchorElement>("a[href]").forEach((a) => {
+        if (a.origin === location.origin || !/^https?:$/.test(a.protocol)) return;
+        a.target = "_blank";
+        a.relList.add("noopener", "noreferrer");
+      });
+    </script>
   </body>
 </html>

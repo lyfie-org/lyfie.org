@@ -28,3 +28,7 @@ coverage/
 .dev.vars*
 # astro
 .astro/
+
+# local tooling (Claude Code)
+.claude/settings.local.json
+.claude/launch.json

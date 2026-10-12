@@ -10,8 +10,8 @@ const { status } = Astro.props;
 const variants = {
   stable: { cls: "badge--leaf", label: "Stable" },
   beta: { cls: "badge--warn", label: "Beta" },
-  alpha: { cls: "badge--accent", label: "Alpha" },
-  planned: { cls: "", label: "Planned" }
+  alpha: { cls: "badge--warn", label: "Alpha" },
+  planned: { cls: "badge--accent", label: "In development" }
 } as const;
 
 const { cls, label } = variants[status];

@@ -62,7 +62,7 @@ h4 {
 }
 
 h1 {
-  /* The 56px "splash/marketing size" the app"s own stylesheet reserves for
+  /* The 56px "splash/marketing size" the app's own stylesheet reserves for
      exactly this use. Stated in px, not rem: the root font-size is 18px, so a
      rem clamp would silently scale this to 63px. */
   font-size: clamp(36px, 4.5vw + 16px, 56px);
@@ -174,7 +174,7 @@ code {
 }
 
 /* ------------------------------------------------------------------- buttons */
-/* Same shape as papyra.app"s primary button. Sakura is light against paper, so
+/* Same shape as papyra.app's primary button. Sakura is light against paper, so
    the fill carries a darker border to hold its edge. */
 
 .btn {
@@ -228,7 +228,7 @@ code {
 }
 
 /* --------------------------------------------------------------------- cards */
-/* Same object as papyra.app"s cards (and the note card in the Papyra app). */
+/* Same object as papyra.app's cards (and the note card in the Papyra app). */
 
 .card {
   display: flex;
@@ -429,7 +429,7 @@ a.card:hover {
 /* Shiki dual-theme. Astro inlines both palettes as CSS variables on every token
    and leaves the choice to the page; the light one is the default, and this
    flips the whole block in dark mode. Keyed off data-theme, not a media query,
-   so it follows the site"s own toggle rather than the OS. */
+   so it follows the site's own toggle rather than the OS. */
 [data-theme="dark"] .prose .astro-code,
 [data-theme="dark"] .prose .astro-code span {
   color: var(--shiki-dark) !important;
@@ -535,4 +535,236 @@ a.card:hover {
 
 .page-head .lede {
   max-width: 56ch;
+}
+
+/* ------------------------------------------------------- ported from papyra */
+
+.wrap--wide {
+  max-width: 72rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Jumping to a heading or section must not land it under the sticky header. */
+.prose :is(h2, h3),
+section[id] {
+  scroll-margin-top: 72px;
+}
+
+.btn--lg {
+  padding: var(--space-4) var(--space-6);
+  font-size: var(--fs-md);
+}
+
+/* Alternate band, so long pages read as chapters. */
+.section--tint {
+  background: color-mix(in srgb, var(--surface) 50%, transparent);
+  border-block: 1px solid var(--border);
+}
+
+/* Centred section opener: eyebrow + big heading (+ optional lede). */
+.intro {
+  text-align: center;
+  margin-bottom: clamp(var(--space-10), 6vw, var(--space-12));
+}
+
+.intro h2 {
+  font-size: clamp(30px, 3vw + 14px, 48px);
+  margin: 0;
+}
+
+.intro .lede {
+  margin: var(--space-4) auto 0;
+  max-width: 52ch;
+}
+
+/* A small pill with a glowing dot — "what this is" above a hero headline. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px 14px 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  font: 500 var(--fs-xs) / 1.2 var(--sans);
+  color: var(--text-h);
+  text-decoration: none;
+}
+
+.chip__dot {
+  width: 8px;
+  height: 8px;
+  margin-left: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-bg);
+}
+
+/* Short check-marked list under a pitch. */
+.ticks {
+  list-style: none;
+  margin: 0 0 var(--space-6);
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--text-h);
+}
+
+.ticks li {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+}
+
+.ticks svg {
+  flex: none;
+  color: var(--leaf-text);
+  transform: translateY(3px);
+}
+
+/* Row links with an icon, a title, a line and an arrow. */
+.helps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.helps__item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+
+.helps__item:hover {
+  border-color: var(--border-hover);
+  color: inherit;
+  transform: translateX(3px);
+}
+
+.helps__item strong {
+  display: block;
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+.helps__text {
+  font-size: var(--fs-xs);
+  color: var(--text);
+}
+
+.helps__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-bg);
+  color: var(--accent-text);
+}
+
+.helps__arrow {
+  color: var(--text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .helps__item:hover {
+    transform: none;
+  }
+}
+
+/* Questions as native <details>: keyboard and screen-reader support for free. */
+.faq {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.faq__item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.faq__item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq__item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq__item h3 {
+  margin: 0;
+  font: 500 var(--fs-md) / 1.4 var(--sans);
+  letter-spacing: 0;
+}
+
+.faq__chev {
+  flex: none;
+  color: var(--text);
+  transition: transform var(--dur) var(--ease);
+}
+
+.faq__item[open] .faq__chev {
+  transform: rotate(90deg);
+}
+
+.faq__item p {
+  margin: 0;
+  padding: 0 var(--space-5) var(--space-5);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--text);
+}
+
+/* ------------------------------------------------------------- reveal */
+/* Sections drift up as they arrive. Only when JS is running (Base adds .js),
+   so nothing is ever hidden from a reader without it. */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 700ms var(--ease),
+      transform 700ms var(--ease);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  .js [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media print {
+  .js [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }

@@ -1,0 +1,57 @@
+---
+// A grid of short product clips, each with a one-line, plain-language caption.
+import ClipView from "./Clip.astro";
+import type { Clip } from "../data/media";
+
+interface Props {
+  clips: Clip[];
+}
+
+const { clips } = Astro.props;
+---
+
+<ul class="gallery">
+  {clips.map((c, i) => (
+    <li class="gallery__item" data-reveal style={`--reveal-delay:${(i % 2) * 90}ms`}>
+      <ClipView
+        src={c.src}
+        themed={c.themed}
+        width={c.width}
+        height={c.height}
+        label={c.label}
+      />
+      <h3>{c.title}</h3>
+      <p>{c.text}</p>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .gallery {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: clamp(var(--space-8), 4vw, var(--space-12))
+      clamp(var(--space-6), 3vw, var(--space-10));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gallery__item h3 {
+    margin: var(--space-5) 0 var(--space-1);
+    font-size: var(--fs-xl);
+  }
+
+  .gallery__item p {
+    margin: 0;
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    max-width: 44ch;
+  }
+
+  @media (max-width: 48rem) {
+    .gallery {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>
