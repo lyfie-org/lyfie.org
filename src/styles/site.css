@@ -138,7 +138,14 @@ code {
 }
 
 .section {
-  padding-block: clamp(var(--space-12), 8vw, 7rem);
+  padding-block: clamp(var(--space-10), 5vw, 4.5rem);
+}
+
+/* Content rides above the page-wide falling flora (FallingFlora, z-index 0). */
+main,
+.site-footer {
+  position: relative;
+  z-index: 1;
 }
 
 .eyebrow {
@@ -530,7 +537,7 @@ a.card:hover {
 }
 
 .page-head {
-  padding-block: clamp(var(--space-10), 7vw, 6rem) var(--space-8);
+  padding-block: clamp(var(--space-8), 5vw, 4rem) var(--space-6);
 }
 
 .page-head .lede {
@@ -572,7 +579,7 @@ section[id] {
 /* Centred section opener: eyebrow + big heading (+ optional lede). */
 .intro {
   text-align: center;
-  margin-bottom: clamp(var(--space-10), 6vw, var(--space-12));
+  margin-bottom: clamp(var(--space-8), 4vw, var(--space-10));
 }
 
 .intro h2 {

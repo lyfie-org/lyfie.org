@@ -3,6 +3,7 @@ import "../styles/site.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import ScrollTop from "../components/ScrollTop.astro";
+import FallingFlora from "../components/FallingFlora.astro";
 import { getImage } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import { SITE_NAME, TAGLINE } from "../data/site";
@@ -142,6 +143,7 @@ const ogImage = new URL(card?.src ?? "/og.png", Astro.site).href;
     <a class="skip-link" href="#main">
       Skip to content
     </a>
+    <FallingFlora />
     <Header />
     <main id="main">
       <slot />

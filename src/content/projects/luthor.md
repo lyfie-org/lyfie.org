@@ -13,7 +13,7 @@ logo: ../../assets/logos/luthor.png
 cover: ../../assets/shots/luthor-editor.webp
 coverAlt: "The Luthor editor with its formatting toolbar, inserting a heading with a slash command"
 points: [Presets, Headless, Lexical, TypeScript]
-order: 1
+order: 2
 featured: true
 ---
 

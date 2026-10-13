@@ -18,7 +18,7 @@ import {
 export const FAQ: { q: string; a: string }[] = [
   {
     q: "Is it really free?",
-    a: "Yes. Every Lyfie project is open source — Luthor under MIT, Papyra under GPL-3.0 — with no paid tier, no licence key and no account with us. Sponsorship keeps the work going; it never buys features others cannot have."
+    a: "Yes. Every Lyfie project is open source — Papyra under GPL-3.0, Luthor under MIT — with no paid tier, no licence key and no account with us. Sponsorship keeps the work going; it never buys features others cannot have."
   },
   {
     q: "Do you track me?",

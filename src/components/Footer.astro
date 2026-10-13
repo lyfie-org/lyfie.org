@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import Icon from "./Icon.astro";
 import {
+  CREATOR_GITHUB_URL,
   CREATOR_NAME,
   CREATOR_URL,
   GITHUB_ORG_URL,
@@ -43,8 +44,7 @@ const columns: { title: string; links: Link[] }[] = [
       { href: PAPYRA_URL, label: "papyra.app", external: true },
       { href: GITHUB_ORG_URL, label: "GitHub", external: true },
       { href: SPONSORS_URL, label: "GitHub Sponsors", external: true },
-      { href: X_URL, label: "X / Twitter", external: true },
-      { href: CREATOR_URL, label: "rahulnsanand.com", external: true }
+      { href: X_URL, label: "X / Twitter", external: true }
     ]
   }
 ];
@@ -57,13 +57,6 @@ const columns: { title: string; links: Link[] }[] = [
       <p class="site-footer__blurb">
         Free, open-source software — libraries, apps and games — with no paywalls, no
         trackers and no lock-in.
-      </p>
-      <p class="site-footer__family">
-        Made with <Icon name="heart" size={13} class="site-footer__heart" /> by{" "}
-        <a href={CREATOR_URL} rel="noopener noreferrer">
-          {CREATOR_NAME}
-        </a>
-        .
       </p>
       <p class="site-footer__icons">
         <a
@@ -102,9 +95,43 @@ const columns: { title: string; links: Link[] }[] = [
   </div>
 
   <div class="wrap site-footer__legal">
+    <p class="site-footer__maker">
+      <a
+        class="site-footer__mark-img"
+        href={CREATOR_URL}
+        rel="noopener noreferrer"
+        tabindex="-1"
+      >
+        <picture>
+          <source
+            srcset="/media/maker/rna-still.webp"
+            media="(prefers-reduced-motion: reduce)"
+          />
+          <img
+            src="/media/maker/rna.webp"
+            alt=""
+            width="28"
+            height="28"
+            loading="lazy"
+            decoding="async"
+          />
+        </picture>
+      </a>
+      <span>
+        Made with <Icon name="heart" size={13} class="site-footer__heart" /> by{" "}
+        <a href={CREATOR_URL} rel="noopener noreferrer">
+          {CREATOR_NAME}
+        </a>{" "}
+        ·{" "}
+        <a href={CREATOR_GITHUB_URL} rel="noopener noreferrer">
+          GitHub
+        </a>
+      </span>
+    </p>
     <p>
       © {year} {SITE_NAME} · Open source, always
     </p>
+    <p>Our apps are partly vibe-coded — life’s too short to scroll through forums.</p>
     <p>Built and hosted without a single third-party request.</p>
   </div>
 </footer>
@@ -138,24 +165,36 @@ const columns: { title: string; links: Link[] }[] = [
     max-width: 32ch;
   }
 
-  .site-footer__family {
-    font-size: var(--fs-xs);
-    color: var(--text);
-    margin: 0 0 var(--space-4);
+  .site-footer__maker {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
   }
 
-  .site-footer__family :global(.site-footer__heart) {
+  .site-footer__mark-img {
+    flex: none;
+    border-radius: 50%;
+  }
+
+  .site-footer__mark-img img {
+    display: block;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+  }
+
+  .site-footer__maker :global(.site-footer__heart) {
     color: var(--accent-text);
     fill: currentColor;
     vertical-align: -2px;
   }
 
-  .site-footer__family a {
+  .site-footer__legal a {
     color: inherit;
     text-decoration-color: var(--border-hover);
   }
 
-  .site-footer__family a:hover {
+  .site-footer__legal a:hover {
     color: var(--accent-text);
   }
 
@@ -211,11 +250,12 @@ const columns: { title: string; links: Link[] }[] = [
     text-decoration: underline;
   }
 
+  /* Footnote: who made it and how, on the left; the fine print on the right. */
   .site-footer__legal {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--space-2);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--space-2) var(--space-6);
     margin-top: var(--space-8);
     padding-top: var(--space-5);
     border-top: 1px solid var(--border);
@@ -227,6 +267,10 @@ const columns: { title: string; links: Link[] }[] = [
     color: var(--text);
   }
 
+  .site-footer__legal p:nth-child(even) {
+    text-align: end;
+  }
+
   @media (max-width: 56rem) {
     .site-footer__inner {
       grid-template-columns: repeat(2, 1fr);
@@ -234,6 +278,14 @@ const columns: { title: string; links: Link[] }[] = [
 
     .site-footer__about {
       grid-column: 1 / -1;
+    }
+
+    .site-footer__legal {
+      grid-template-columns: 1fr;
+    }
+
+    .site-footer__legal p:nth-child(even) {
+      text-align: start;
     }
   }
 </style>
