@@ -15,7 +15,7 @@ logo: ../../assets/logos/papyra.png
 cover: ../../assets/shots/papyra-desk-light.png
 coverAlt: "The Papyra desk: colourful note cards in a grid, with a sidebar of collections"
 points: [Plain Markdown, Self-hosted, Live collaboration, No telemetry]
-order: 2
+order: 1
 featured: true
 ---
 

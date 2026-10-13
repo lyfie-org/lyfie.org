@@ -3,7 +3,6 @@ import { Image, getImage } from "astro:assets";
 import { getCollection, getEntry } from "astro:content";
 import Base from "../layouts/Base.astro";
 import Icon from "../components/Icon.astro";
-import FallingFlora from "../components/FallingFlora.astro";
 import ChangelogList from "../components/ChangelogList.astro";
 import ProductRow from "../components/ProductRow.astro";
 import Frame from "../components/Frame.astro";
@@ -17,7 +16,6 @@ import papyraLight from "../assets/shots/papyra-desk-light.png";
 import papyraDark from "../assets/shots/papyra-desk-dark.png";
 import { FAQ, homeGraph } from "../data/about";
 import {
-  CREATOR_GITHUB_URL,
   CREATOR_NAME,
   CREATOR_URL,
   DESCRIPTION,
@@ -98,10 +96,9 @@ const helps = [
 const clip = (project: string, src: string) =>
   MEDIA[project]!.find((c) => c.src.endsWith(`/${src}`))!;
 const heroPapyra = clip("papyra", "drop");
-const heroLuthor = clip("luthor", "slash");
 const rowLuthor = clip("luthor", "embeds");
 const galleryPapyra = MEDIA.papyra!.filter((c) => c !== heroPapyra);
-const galleryLuthor = MEDIA.luthor!.filter((c) => c !== heroLuthor && c !== rowLuthor);
+const galleryLuthor = MEDIA.luthor!.filter((c) => c !== rowLuthor);
 
 // From Luthor's README quick start.
 const luthorInstall = "npm install @lyfie/luthor react react-dom";
@@ -116,7 +113,6 @@ const luthorInstall = "npm install @lyfie/luthor react react-dom";
   />
   <!-- ------------------------------------------------------------ hero -->
   <section class="hero">
-    <FallingFlora />
     <div class="wrap hero__inner">
       <Image
         class="hero__logo"
@@ -127,15 +123,11 @@ const luthorInstall = "npm install @lyfie/luthor react react-dom";
         densities={[1, 2]}
         loading="eager"
       />
-      <p class="chip hero__chip">
-        <span class="chip__dot"></span>
-        Free and open source · No trackers
-      </p>
       <h1>Lyfie</h1>
       <p class="hero__tagline">{TAGLINE}</p>
       <p class="hero__lede">
-        We make software you can read, run and keep — a rich-text editor for developers
-        and a notes app for everyone. No subscriptions, no data harvesting, no lock-in.
+        We make software you can read, run and keep — a notes app for everyone and a
+        rich-text editor for developers. No subscriptions, no data harvesting, no lock-in.
       </p>
       <div class="hero__actions">
         <a class="btn btn--lg" href="#products">
@@ -154,18 +146,10 @@ const luthorInstall = "npm install @lyfie/luthor react react-dom";
         </a>
       </p>
 
-      {/* The two products, moving: a glimpse before a word of explanation. */}
+      {/* Papyra, moving: a glimpse before a word of explanation. */}
       <div class="hero__stage">
         <Clip
-          class="hero__clip hero__clip--back"
-          src={heroLuthor.src}
-          width={heroLuthor.width}
-          height={heroLuthor.height}
-          label={heroLuthor.label}
-          eager
-        />
-        <Clip
-          class="hero__clip hero__clip--front"
+          class="hero__clip"
           src={heroPapyra.src}
           themed={heroPapyra.themed}
           width={heroPapyra.width}
@@ -173,9 +157,6 @@ const luthorInstall = "npm install @lyfie/luthor react react-dom";
           label={heroPapyra.label}
           eager
         />
-        <p class="hero__tag hero__tag--luthor" aria-hidden="true">
-          Luthor
-        </p>
         <p class="hero__tag hero__tag--papyra" aria-hidden="true">
           Papyra
         </p>
@@ -206,40 +187,14 @@ const luthorInstall = "npm install @lyfie/luthor react react-dom";
           Both free.
         </h2>
         <p class="lede">
-          Each has its own site and docs. One is the editor; the other is built on it.
+          Each has its own site and docs. One is the notes app; the other is the editor
+          inside it.
         </p>
       </header>
 
       <div class="rows">
         <ProductRow
-          project={luthor}
-          eyebrow="For developers"
-          title="An editor you can ship today — and own forever."
-          ticks={[
-            "Polished presets that work on day one",
-            "A headless, typed runtime for full control",
-            "Markdown in, Markdown out — losslessly",
-            "React, Next.js, Astro, Vite and Remix"
-          ]}
-        >
-          <Fragment slot="pitch">
-            A TypeScript-first rich-text editor for React, built on Meta’s Lexical. Start
-            with a preset, go headless when you need every pixel. MIT, no paid tier.
-          </Fragment>
-          <Clip
-            src={rowLuthor.src}
-            width={rowLuthor.width}
-            height={rowLuthor.height}
-            label={rowLuthor.label}
-          />
-          <div class="row__install">
-            <CodeBlock code={luthorInstall} label="Terminal" lang="bash" />
-          </div>
-        </ProductRow>
-
-        <ProductRow
           project={papyra}
-          flip
           eyebrow="For everyone"
           title="A calm home for your notes, on your own server."
           ticks={[
@@ -269,6 +224,33 @@ const luthorInstall = "npm install @lyfie/luthor react react-dom";
               sizes="(max-width: 56rem) 100vw, 640px"
             />
           </Frame>
+        </ProductRow>
+
+        <ProductRow
+          project={luthor}
+          flip
+          eyebrow="For developers"
+          title="An editor you can ship today — and own forever."
+          ticks={[
+            "Polished presets that work on day one",
+            "A headless, typed runtime for full control",
+            "Markdown in, Markdown out — losslessly",
+            "React, Next.js, Astro, Vite and Remix"
+          ]}
+        >
+          <Fragment slot="pitch">
+            A TypeScript-first rich-text editor for React, built on Meta’s Lexical. Start
+            with a preset, go headless when you need every pixel. MIT, no paid tier.
+          </Fragment>
+          <Clip
+            src={rowLuthor.src}
+            width={rowLuthor.width}
+            height={rowLuthor.height}
+            label={rowLuthor.label}
+          />
+          <div class="row__install">
+            <CodeBlock code={luthorInstall} label="Terminal" lang="bash" />
+          </div>
         </ProductRow>
       </div>
     </div>
@@ -405,71 +387,6 @@ const luthorInstall = "npm install @lyfie/luthor react react-dom";
     </div>
   </section>
 
-  <!-- ------------------------------------------------------------ maker -->
-  <section class="section" id="maker">
-    <div class="wrap split">
-      <div data-reveal>
-        <a class="maker__mark" href={CREATOR_URL} rel="noopener noreferrer" tabindex="-1">
-          <picture>
-            <source
-              srcset="/media/maker/rna-still.webp"
-              media="(prefers-reduced-motion: reduce)"
-            />
-            <img
-              src="/media/maker/rna.webp"
-              alt={`${CREATOR_NAME}’s mark`}
-              width="96"
-              height="96"
-              loading="lazy"
-              decoding="async"
-            />
-          </picture>
-        </a>
-        <p class="eyebrow">Who’s behind it</p>
-        <h2>
-          Made by one person.
-          <br />
-          Open to everyone.
-        </h2>
-        <p>
-          Lyfie was started by {CREATOR_NAME}, an engineer who values privacy and builds
-          software that respects it. One person keeps the direction coherent; anyone can
-          shape it with an issue, an idea or a pull request.
-        </p>
-        <p>
-          It is a small operation, and honest about it: projects say how mature they are,
-          and whatever happens, the code stays yours to read, fork and keep.
-        </p>
-      </div>
-      <ul class="helps" data-reveal style="--reveal-delay:120ms">
-        <li>
-          <a class="helps__item" href={CREATOR_URL} rel="noopener noreferrer">
-            <span class="helps__icon">
-              <Icon name="user" size={18} />
-            </span>
-            <span>
-              <strong>rahulnsanand.com</strong>
-              <span class="helps__text">{CREATOR_NAME}’s own site.</span>
-            </span>
-            <Icon name="arrow-right" size={16} class="helps__arrow" />
-          </a>
-        </li>
-        <li>
-          <a class="helps__item" href={CREATOR_GITHUB_URL} rel="noopener noreferrer">
-            <span class="helps__icon">
-              <Icon name="github" size={18} />
-            </span>
-            <span>
-              <strong>@rahulnsanand</strong>
-              <span class="helps__text">On GitHub.</span>
-            </span>
-            <Icon name="arrow-right" size={16} class="helps__arrow" />
-          </a>
-        </li>
-      </ul>
-    </div>
-  </section>
-
   <!-- ------------------------------------------------------------- help -->
   <section class="section section--tint" id="help">
     <div class="wrap split">
@@ -537,7 +454,8 @@ const luthorInstall = "npm install @lyfie/luthor react react-dom";
   .hero {
     position: relative;
     isolation: isolate;
-    padding-block: clamp(var(--space-12), 9vw, 8rem) clamp(var(--space-10), 6vw, 5rem);
+    padding-block: clamp(var(--space-10), 6vw, 5rem)
+      clamp(var(--space-8), 4vw, var(--space-12));
     text-align: center;
   }
 
@@ -554,10 +472,6 @@ const luthorInstall = "npm install @lyfie/luthor react react-dom";
     margin-bottom: var(--space-5);
     height: auto;
     filter: drop-shadow(0 10px 22px color-mix(in srgb, var(--scrim) 14%, transparent));
-  }
-
-  .hero__chip {
-    margin-bottom: var(--space-5);
   }
 
   .hero h1 {
@@ -635,7 +549,7 @@ const luthorInstall = "npm install @lyfie/luthor react react-dom";
   /* -------------------------------------------------------- products */
   .rows {
     display: grid;
-    gap: clamp(var(--space-12), 9vw, 8rem);
+    gap: clamp(var(--space-10), 6vw, 5rem);
   }
 
   .row__install {
@@ -645,35 +559,13 @@ const luthorInstall = "npm install @lyfie/luthor react react-dom";
   /* ------------------------------------------------------- hero stage */
   .hero__stage {
     position: relative;
-    width: min(100%, 60rem);
-    margin-top: clamp(var(--space-10), 6vw, var(--space-12));
-    padding-bottom: 7%;
+    width: min(100%, 48rem);
+    margin-top: clamp(var(--space-12), 7vw, 4.5rem);
   }
 
-  .hero__stage :global(.hero__clip--front) {
+  .hero__stage :global(.hero__clip) {
     position: relative;
     z-index: 2;
-    width: 74%;
-  }
-
-  .hero__stage :global(.hero__clip--back) {
-    position: absolute;
-    z-index: 1;
-    right: 0;
-    bottom: 0;
-    width: 52%;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .hero__stage :global(.hero__clip--back) {
-      animation: float 9s var(--ease-inout) infinite alternate;
-    }
-  }
-
-  @keyframes float {
-    to {
-      transform: translateY(-10px);
-    }
   }
 
   .hero__tag {
@@ -690,64 +582,16 @@ const luthorInstall = "npm install @lyfie/luthor react react-dom";
     color: var(--text-h);
   }
 
-  /* Name tags sit on the frames' edges, never over the product itself. */
+  /* The name tag sits on the frame's edge, never over the product itself. */
   .hero__tag--papyra {
     left: var(--space-6);
     top: 0;
     transform: translateY(calc(-100% - var(--space-2)));
   }
 
-  .hero__tag--luthor {
-    right: var(--space-6);
-    bottom: 0;
-    transform: translateY(50%);
-  }
-
-  @media (max-width: 40rem) {
-    .hero__stage :global(.hero__clip--front) {
-      width: 100%;
-    }
-
-    .hero__stage :global(.hero__clip--back) {
-      position: relative;
-      width: 82%;
-      margin: calc(-1 * var(--space-8)) 0 0 auto;
-    }
-
-    /* Stacked: Papyra on top (its tag above it), Luthor tucked beneath. */
-    .hero__stage {
-      display: flex;
-      flex-direction: column;
-      padding-bottom: var(--space-4);
-    }
-
-    .hero__stage :global(.hero__clip--front) {
-      order: 1;
-    }
-
-    .hero__stage :global(.hero__clip--back) {
-      order: 2;
-    }
-  }
-
-  /* ------------------------------------------------------------ maker */
-  .maker__mark {
-    display: inline-block;
-    margin-bottom: var(--space-5);
-    border-radius: 50%;
-    box-shadow: var(--shadow-card);
-  }
-
-  .maker__mark img {
-    display: block;
-    width: 96px;
-    height: 96px;
-    border-radius: 50%;
-  }
-
   /* ---------------------------------------------------------- gallery */
   .showcase + .showcase {
-    margin-top: clamp(var(--space-12), 8vw, 7rem);
+    margin-top: clamp(var(--space-10), 6vw, 5rem);
   }
 
   .showcase__head {

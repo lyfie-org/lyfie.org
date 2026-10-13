@@ -1,9 +1,9 @@
 ---
-// Lyfie's signature: a few sakura petals and leaves drifting through the hero.
+// Lyfie's signature: a few sakura petals and leaves drifting down every page.
 //
-// Ported from the old React component, but calmer: ten particles instead of 28,
-// slower, confined to the hero band (the parent must be position: relative), and
-// randomised at BUILD time with a seeded generator — so it ships zero JavaScript
+// Ported from the old React component, but calmer: fourteen particles instead of
+// 28, slower, fixed to the viewport behind the content (Base renders it once, and
+// main/footer sit above it), and randomised at BUILD time with a seeded generator — so it ships zero JavaScript
 // and the markup is identical on every build. Colours come from tokens, so the
 // petals re-tint with the theme. Hidden entirely under prefers-reduced-motion.
 
@@ -12,7 +12,7 @@ interface Props {
   seed?: number;
 }
 
-const { count = 10, seed = 20260927 } = Astro.props;
+const { count = 14, seed = 20260927 } = Astro.props;
 
 // mulberry32: tiny deterministic PRNG.
 let state = seed;
@@ -108,16 +108,16 @@ const LEAVES = [
 
 <style>
   .flora {
-    position: absolute;
+    position: fixed;
     inset: 0;
     z-index: 0;
     overflow: hidden;
     pointer-events: none;
-    /* Particles travel in container units, so the fall spans the hero exactly. */
+    /* Particles travel in container units, so the fall spans the viewport exactly. */
     container-type: size;
     color: var(--text-h);
-    /* Fade in/out at the band's edges instead of popping at a hard line. */
-    mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 80%, transparent);
+    /* Fade in/out at the viewport's edges instead of popping at a hard line. */
+    mask-image: linear-gradient(to bottom, transparent, #000 8%, #000 88%, transparent);
   }
 
   .flora__particle {
@@ -170,7 +170,7 @@ const LEAVES = [
   }
 
   @media (max-width: 45rem) {
-    .flora__particle:nth-child(n + 6) {
+    .flora__particle:nth-child(n + 8) {
       display: none;
     }
   }
