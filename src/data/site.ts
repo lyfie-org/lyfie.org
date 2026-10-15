@@ -12,6 +12,8 @@ export const SPONSORS_URL = "https://github.com/sponsors/lyfie-org";
 export const GOOD_FIRST_ISSUES_URL =
   "https://github.com/search?q=org%3Alyfie-org+label%3A%22good+first+issue%22+state%3Aopen&type=issues";
 export const X_URL = "https://x.com/lyfieapp";
+/** Community Discord: Papyra, Luthor and future apps each get a channel set. Never-expiring invite. */
+export const DISCORD_URL = "https://discord.gg/KQNsjGAUUz";
 
 /** The products' own sites. Project pages read theirs from content frontmatter. */
 export const LUTHOR_URL = "https://www.luthor.fyi";
