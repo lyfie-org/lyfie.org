@@ -5,6 +5,7 @@ import {
   CREATOR_GITHUB_URL,
   CREATOR_NAME,
   CREATOR_URL,
+  DISCORD_URL,
   GITHUB_ORG_URL,
   LUTHOR_URL,
   PAPYRA_URL,
@@ -43,6 +44,7 @@ const columns: { title: string; links: Link[] }[] = [
       { href: LUTHOR_URL, label: "luthor.fyi", external: true },
       { href: PAPYRA_URL, label: "papyra.app", external: true },
       { href: GITHUB_ORG_URL, label: "GitHub", external: true },
+      { href: DISCORD_URL, label: "Discord", external: true },
       { href: SPONSORS_URL, label: "GitHub Sponsors", external: true },
       { href: X_URL, label: "X / Twitter", external: true }
     ]
@@ -66,6 +68,14 @@ const columns: { title: string; links: Link[] }[] = [
           title="Lyfie on GitHub"
         >
           <Icon name="github" size={18} />
+        </a>
+        <a
+          href={DISCORD_URL}
+          rel="noopener noreferrer"
+          aria-label="Lyfie on Discord"
+          title="Chat with us on Discord"
+        >
+          <Icon name="discord" size={18} />
         </a>
         <a
           href={SPONSORS_URL}
