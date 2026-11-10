@@ -29,7 +29,7 @@ export const FAQ: { q: string; a: string }[] = [
     a: "Yes, that is the point. Papyra is one Docker container with one volume, on amd64 or arm64 — a NAS, a Raspberry Pi or a small VPS. Luthor is an npm package that runs inside your own app."
   },
   {
-    q: "What is Rokada?",
+    q: "What is Dabu?",
     a: "A private, self-hosted personal finance app, in development now. Like everything Lyfie makes it will run on your own machine, keep your data there and be free. It is not public yet — watch lyfie-org on GitHub to see it the day it is."
   },
   {
